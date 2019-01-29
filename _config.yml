@@ -1,0 +1,19 @@
+# Site settings
+title: 何事秋风悲画扇
+name: Starry # your name
+email: starry90@qq.com # your email address
+description: >
+    不以物喜，不以己悲. # this means to ignore newlines until "baseurl:"
+baseurl: "/Blog/" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site
+# twitter_username: # your Twitter username
+github_username: starry90 # your Github username
+# disqus_username: # your disqus username
+
+google-analytics: # add it if you have one
+
+skillstree: true # turn on or off the skills tree in about page
+
+# Build settings
+permalink: none
+markdown: kramdown
