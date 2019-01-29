@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- CSS -->
+
+  <link rel="stylesheet" href="/Blog//css/main.css">
+  <link rel="canonical" href="http://localhost:4000/Blog//coding/Ubuntu%E7%B3%BB%E7%BB%9F%E5%A4%87%E4%BB%BD%E8%BF%98%E5%8E%9F%E6%95%99%E7%A8%8B.html">
+  <link rel="alternate" type="application/rss+xml" title="何事秋风悲画扇" href="http://localhost:4000/Blog//feed.xml">
+
+<!-- Google font -->
+
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Noto Sans">
+
+<!-- font awesome -->
+
+<link rel="stylesheet" href="/css/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+
+  
+
+  
+
+  </head>
+
+  <body>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Ubuntu系统备份还原教程</title>
+  <meta name="description" content="背景：公司为每人加装一块256G固态硬盘，为了让系统运行在固态硬盘上，又不想重装系统，主要是新系统装软件，配置这配置那的烦！备份还原这种方式更适合">
+</head>
+
+
+  <div class="wrapper">
+          <header class="post-header">
+
+    <center><div class="post-title" itemprop="name headline">Ubuntu系统备份还原教程</div>
+
+		<div class="post-meta"><i class="fa fa-calendar-o"></i> <time datetime="25 Jan 2019" itemprop="datePublished">Jan 25 2019</time>
+
+		&nbsp;&nbsp;•&nbsp;&nbsp;<i class="fa fa-user-secret"></i> <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Starry</span>
+        
+		<br>
+		<i class="fa fa-eye"></i> <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-pulse"></i></span>˚C</span>
+	</div>
+
+        
+        <div class="post-tags">
+        
+		<a class="post-tags-item" href="http://localhost:4000/Blog//tags/">Ubuntu</a>
+        
+		<a class="post-tags-item" href="http://localhost:4000/Blog//tags/">code</a>
+        
+	</div>
+    </center>
+    
+</header>
+
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+<div class="post-content">
+    <center>
+	
+	<p>Ubuntu OS</p>
+	
+    </center>
+	<h2>Directory</h2>
+</div>
+
+<div id="category"></div>
+
+<div class="post-content" itemprop="articleBody">
+    <p>背景：公司为每人加装一块256G固态硬盘，为了让系统运行在固态硬盘上，又不想重装系统，主要是新系统装软件，配置这配置那的烦！备份还原这种方式更适合</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/dev/sda7 为当前要备份的Linux系统盘（以下称系统磁盘）
+/dev/sda6 为存放备份Linux系统的备份盘（以下称备份磁盘）
+/dev/sdb1 为接受还原系统的空磁盘（以下称还原磁盘）
+</code></pre></div></div>
+
+<h4 id="一备份系统">一、备份系统</h4>
+
+<p>//1.获得root权限</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sudo -s
+</code></pre></div></div>
+
+<p>//2.查看当前分区状况</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ fdisk -l
+</code></pre></div></div>
+
+<p>//3.挂载系统磁盘到mnt目录</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ mount /dev/sda7 /mnt
+</code></pre></div></div>
+
+<p>//4.挂载备份磁盘到media目录</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ mount /dev/sda6 /media
+</code></pre></div></div>
+
+<p>//5.备份系统，将系统磁盘数据备份到备份磁盘的backup.sfs中</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ mksquashfs /mnt/ /media/backup.sfs
+</code></pre></div></div>
+
+<p>//6.同步存盘 让系统保存数据</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sync
+</code></pre></div></div>
+
+<p>//7.卸载系统磁盘和备份磁盘</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ umount /mnt
+$ umount /media
+</code></pre></div></div>
+
+<h4 id="二还原系统">二、还原系统</h4>
+
+<p>//1.获得root权限</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sudo -s
+</code></pre></div></div>
+
+<p>//2.查看当前分区状况</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fdisk -l
+</code></pre></div></div>
+
+<p>//3.格式化还原磁盘</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ mkfs.ext4 /dev/sdb1
+</code></pre></div></div>
+
+<p>//4.挂载还原磁盘到mnt目录</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ mount /dev/sdb1 /mnt
+</code></pre></div></div>
+
+<p>//5.挂载备份磁盘到media目录</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ mount /dev/sda6 /media
+</code></pre></div></div>
+
+<p>//6.创建临时目录</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ mkdir /recovery
+</code></pre></div></div>
+
+<p>//7.挂载镜像文件</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ mount -o loop /media/backup.sfs /recovery
+</code></pre></div></div>
+
+<p>//8.复制文件到还原磁盘</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ cp -a /recovery/* /mnt
+</code></pre></div></div>
+
+<p>//9.挂载虚拟文件系统，这是为了后面修复引导做准备</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ mount --o bind /dev /mnt/dev
+$ mount --o bind /proc /mnt/proc
+$ mount --o bind /sys /mnt/sys
+$ mount --o bind /run /mnt/run（这一步可以省略）
+</code></pre></div></div>
+
+<p>//10.把根目录换成还原磁盘所在目录</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ chroot /mnt/
+</code></pre></div></div>
+
+<p>//11.查看还原磁盘文件系统UUID和类型，由于我们格式化了分区，所以UUID发生了变化，若不修改，系统将无法正常挂载分区，导致启动异常。故我们需要修改本机系统的UUID设置。</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ blkid /dev/sdb1
+ /dev/sdb1: UUID="9002cf6e-db33-43e3-bdd1-076724087a53" TYPE="ext4" PARTUUID="00bdd9ac-01"
+</code></pre></div></div>
+
+<p>//12.修改UUID设置</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ vi /etc/fstab
+//&lt;file system&gt;  &lt;mount point&gt;  &lt;type&gt;  &lt;options&gt;  &lt;dump&gt;  &lt;pass&gt;
+//1.文件系统 2.挂载点 3.类型 4.选项 5.0表示不备份 6.必须为0或2(除非引导分区为1)
+//修改挂载点为/的UUID
+//UUID=9002cf6e-db33-43e3-bdd1-076724087a53 /               ext4    errors=remount-ro  0       1
+</code></pre></div></div>
+
+<p>//13.更新GRUB 因为UUID被改动，所以我们需要更新GRUB。</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ grub-install /dev/sdb （sdb是你主硬盘的位置）
+$ update-grub
+</code></pre></div></div>
+
+<p>//14.退出chroot</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ exit
+</code></pre></div></div>
+
+<p>//15.卸载文件系统</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>umount /mnt/dev
+umount /mnt/proc
+umount /mnt/sys
+umount /mnt/run
+</code></pre></div></div>
+
+<p>//16.同步存盘 让系统保存数据</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ sync
+</code></pre></div></div>
+
+<p><a href="https://www.ithome.com/html/win10/331942.htm">参考</a></p>
+
+<p><img src="../images/ubuntu/ubuntu_backup_restore.jpg" alt="ubuntu.jpg" /></p>
+
+</div>
+
+<div>
+	
+	<div class="eof"></div>
+	
+</div>
+
+<div class="share">
+    <p>Share this post with: </p>
+	<a href="https://twitter.com/intent/tweet?text=Ubuntu系统备份还原教程@&amp;url=http://localhost:4000/Blog//coding/Ubuntu%E7%B3%BB%E7%BB%9F%E5%A4%87%E4%BB%BD%E8%BF%98%E5%8E%9F%E6%95%99%E7%A8%8B.html" class="twitter-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/Blog//coding/Ubuntu%E7%B3%BB%E7%BB%9F%E5%A4%87%E4%BB%BD%E8%BF%98%E5%8E%9F%E6%95%99%E7%A8%8B.html" class="facebook-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://plus.google.com/share?url=http://localhost:4000/Blog//coding/Ubuntu%E7%B3%BB%E7%BB%9F%E5%A4%87%E4%BB%BD%E8%BF%98%E5%8E%9F%E6%95%99%E7%A8%8B.html" class="googleplus-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-google-plus fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+</div>
+
+
+<div id="disqus_thread"></div>
+
+
+ 
+</div>
+
+
+</article>
+
+  </div>
+
+</body>
+
+<foot>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <center>
+        
+		<p><a class="link" href="/Blog//archive/">Archive</a> /
+		<a class="link" href="/Blog//category/">Category</a> / 
+		<a class="link" href="/Blog//tags/">Tags</a> / 
+		<a class="link" href="/Blog//about/">About</a> <!-- /
+        <a class="link" href="/Blog//contact/">Contact</a> -->
+        </p>
+
+        <span><script>document.write(new Date().getFullYear());</script></span>
+        <span>&copy;</span>
+        
+		<a class="link" href="/Blog/">Starry</a>
+		<br>
+		<span>Powered by <a class="link" href="https://jekyllrb.com/" target="_blank">Jekyll</a> | </span>
+				<iframe
+			style="margin-left: 2px; margin-bottom:-5px;"
+			frameborder="0" scrolling="0" width="150px" height="20px"
+			src="https://ghbtns.com/github-btn.html?user=starry90&type=follow&count=true" >
+		</iframe>
+
+    </center>
+    
+  </div>
+
+</footer>
+
+    <foot>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Derictory -->
+
+  <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+  <script src="http://yandex.st/highlightjs/6.2/highlight.min.js"></script>
+
+<!-- Hit analytics -->
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- Directory -->
+
+<script src="/Blog//js/main.js"></script>
+
+</foot>
+
+
+</foot>
+
+</html>
