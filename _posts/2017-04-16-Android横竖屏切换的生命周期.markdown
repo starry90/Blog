@@ -1,0 +1,83 @@
+---
+layout: post
+title: "Android横竖屏切换的生命周期"
+subtitle: ""
+date: 2017-04-16
+author: Starry
+category: coding
+tags: android
+finished: true
+---
+
+横竖屏切换生命周期方法：执行的顺序一致，且只执行一遍。不会出现网上说的横屏切到竖屏执行两遍的问题
+
+## 1，默认情况
+
+android3.2之前的版本，生命周期方法执行顺序如下
+```
+onSaveInstanceState(Bundle outState)
+onPause()
+onStop()
+onDestroy()
+onCreate()
+onStart()
+onResume()
+```
+
+android3.2版本开始，生命周期方法执行顺序如下
+```
+onPause()
+onSaveInstanceState(Bundle outState)
+onStop()
+onDestroy()
+onCreate()
+onStart()
+onResume()
+```
+
+## 2，在清单文件里给Activity配置了android:configChanges="orientation"
+
+1，android3.2之前的版本，生命周期方法执行顺序如下
+```
+onConfigurationChanged(Configuration newConfig)
+```
+2，android3.2版本开始，生命周期方法执行顺序如下
+a，如果targetSdkVersion<=12
+```
+onConfigurationChanged(Configuration newConfig)
+```
+b，如果targetSdkVersion>12，不起作用
+```
+onPause()
+onSaveInstanceState(Bundle outState)
+onStop()
+onDestroy()
+onCreate()
+onStart()
+onResume()
+```
+c，如果targetSdkVersion>12，还得配置screenSize，也就是android:configChanges="orientation|screenSize"
+```
+onConfigurationChanged(Configuration newConfig)
+```
+>google在android3.2中添加了screensize改变的通知，在转屏的时候，不仅是orientation发生了改变，screensize同样也发生了改变
+
+## 3，总结
+
+1，默认情况下横竖屏切换，
+
+   a，3.2之前的版本先执行onPause()，再执行onSaveInstanceState(Bundle outState)
+
+   b，3.2版本开始先执行onSaveInstanceState(Bundle outState)，再执行onPause()
+
+2，配置android:configChanges="orientation"，防止横竖屏切换重新创建Activity
+    a，如果targetSdkVersion<=12，所有版本都有效
+    b，如果targetSdkVersion>12，3.2版本开始需要多加个screenSize
+
+3，keyboardHidden这个属性是指硬键盘的状态，和软键盘没有关系，看网上都有带这个参数，正常情况下是多余的。
+
+参考
+
+https://developer.android.google.cn/guide/topics/manifest/activity-element.html#config
+
+http://blog.csdn.net/xiaole0313/article/details/51537809

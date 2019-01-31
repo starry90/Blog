@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- CSS -->
+
+  <link rel="stylesheet" href="/Blog//css/main.css">
+  <link rel="canonical" href="http://localhost:4000/Blog//coding/Android%E6%A8%AA%E7%AB%96%E5%B1%8F%E5%88%87%E6%8D%A2%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.html">
+  <link rel="alternate" type="application/rss+xml" title="何事秋风悲画扇" href="http://localhost:4000/Blog//feed.xml">
+
+<!-- Google font -->
+
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Noto Sans">
+
+<!-- font awesome -->
+
+<link rel="stylesheet" href="/css/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+
+  
+    <script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    
+  ga('create', 'UA-133449851-1', 'auto');
+  ga('send', 'pageview');
+    
+	</script>
+
+
+  
+
+  
+
+  </head>
+
+  <body>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Android横竖屏切换的生命周期</title>
+  <meta name="description" content="横竖屏切换生命周期方法：执行的顺序一致，且只执行一遍。不会出现网上说的横屏切到竖屏执行两遍的问题">
+</head>
+
+
+  <div class="wrapper">
+          <header class="post-header">
+
+    <center><div class="post-title" itemprop="name headline">Android横竖屏切换的生命周期</div>
+
+		<div class="post-meta"><i class="fa fa-calendar-o"></i> <time datetime="16 Apr 2017" itemprop="datePublished">Apr 16 2017</time>
+
+		&nbsp;&nbsp;•&nbsp;&nbsp;<i class="fa fa-user-secret"></i> <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Starry</span>
+        
+		<br>
+		<i class="fa fa-eye"></i> <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-pulse"></i></span>˚C</span>
+	</div>
+
+        
+        <div class="post-tags">
+        
+		<a class="post-tags-item" href="http://localhost:4000/Blog//tags/">android</a>
+        
+	</div>
+    </center>
+    
+</header>
+
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+<div class="post-content">
+    <center>
+	
+	<p></p>
+	
+    </center>
+	<h2>Directory</h2>
+</div>
+
+<div id="category"></div>
+
+<div class="post-content" itemprop="articleBody">
+    <p>横竖屏切换生命周期方法：执行的顺序一致，且只执行一遍。不会出现网上说的横屏切到竖屏执行两遍的问题</p>
+
+<h2 id="1默认情况">1，默认情况</h2>
+
+<p>android3.2之前的版本，生命周期方法执行顺序如下</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>onSaveInstanceState(Bundle outState)
+onPause()
+onStop()
+onDestroy()
+onCreate()
+onStart()
+onResume()
+</code></pre></div></div>
+
+<p>android3.2版本开始，生命周期方法执行顺序如下</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>onPause()
+onSaveInstanceState(Bundle outState)
+onStop()
+onDestroy()
+onCreate()
+onStart()
+onResume()
+</code></pre></div></div>
+
+<h2 id="2在清单文件里给activity配置了androidconfigchangesorientation">2，在清单文件里给Activity配置了android:configChanges=”orientation”</h2>
+
+<p>1，android3.2之前的版本，生命周期方法执行顺序如下</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>onConfigurationChanged(Configuration newConfig)
+</code></pre></div></div>
+<p>2，android3.2版本开始，生命周期方法执行顺序如下
+a，如果targetSdkVersion&lt;=12</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>onConfigurationChanged(Configuration newConfig)
+</code></pre></div></div>
+<p>b，如果targetSdkVersion&gt;12，不起作用</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>onPause()
+onSaveInstanceState(Bundle outState)
+onStop()
+onDestroy()
+onCreate()
+onStart()
+onResume()
+</code></pre></div></div>
+<p>c，如果targetSdkVersion&gt;12，还得配置screenSize，也就是android:configChanges=”orientation|screenSize”</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>onConfigurationChanged(Configuration newConfig)
+</code></pre></div></div>
+<blockquote>
+  <p>google在android3.2中添加了screensize改变的通知，在转屏的时候，不仅是orientation发生了改变，screensize同样也发生了改变</p>
+</blockquote>
+
+<h2 id="3总结">3，总结</h2>
+
+<p>1，默认情况下横竖屏切换，</p>
+
+<p>a，3.2之前的版本先执行onPause()，再执行onSaveInstanceState(Bundle outState)</p>
+
+<p>b，3.2版本开始先执行onSaveInstanceState(Bundle outState)，再执行onPause()</p>
+
+<p>2，配置android:configChanges=”orientation”，防止横竖屏切换重新创建Activity
+    a，如果targetSdkVersion&lt;=12，所有版本都有效
+    b，如果targetSdkVersion&gt;12，3.2版本开始需要多加个screenSize</p>
+
+<p>3，keyboardHidden这个属性是指硬键盘的状态，和软键盘没有关系，看网上都有带这个参数，正常情况下是多余的。</p>
+
+<p>参考</p>
+
+<p>https://developer.android.google.cn/guide/topics/manifest/activity-element.html#config</p>
+
+<p>http://blog.csdn.net/xiaole0313/article/details/51537809</p>
+
+</div>
+
+<div>
+	
+	<div class="eof"></div>
+	
+</div>
+
+<div class="share">
+    <p>Share this post with: </p>
+	<a href="https://twitter.com/intent/tweet?text=Android横竖屏切换的生命周期@&amp;url=http://localhost:4000/Blog//coding/Android%E6%A8%AA%E7%AB%96%E5%B1%8F%E5%88%87%E6%8D%A2%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.html" class="twitter-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/Blog//coding/Android%E6%A8%AA%E7%AB%96%E5%B1%8F%E5%88%87%E6%8D%A2%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.html" class="facebook-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://plus.google.com/share?url=http://localhost:4000/Blog//coding/Android%E6%A8%AA%E7%AB%96%E5%B1%8F%E5%88%87%E6%8D%A2%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.html" class="googleplus-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-google-plus fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+</div>
+
+
+<div id="disqus_thread"></div>
+
+
+ 
+</div>
+
+
+</article>
+
+  </div>
+
+</body>
+
+<foot>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <center>
+        
+		<p><a class="link" href="/Blog//archive/">Archive</a> /
+		<a class="link" href="/Blog//category/">Category</a> / 
+		<a class="link" href="/Blog//tags/">Tags</a> / 
+		<a class="link" href="/Blog//about/">About</a> <!-- /
+        <a class="link" href="/Blog//contact/">Contact</a> -->
+        </p>
+
+        <span><script>document.write(new Date().getFullYear());</script></span>
+        <span>&copy;</span>
+        
+		<a class="link" href="/Blog/">Starry</a>
+		<br>
+		<span>Powered by <a class="link" href="https://jekyllrb.com/" target="_blank">Jekyll</a> | </span>
+				<iframe
+			style="margin-left: 2px; margin-bottom:-5px;"
+			frameborder="0" scrolling="0" width="150px" height="20px"
+			src="https://ghbtns.com/github-btn.html?user=starry90&type=follow&count=true" >
+		</iframe>
+
+    </center>
+    
+  </div>
+
+</footer>
+
+    <foot>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Derictory -->
+
+  <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+  <script src="http://yandex.st/highlightjs/6.2/highlight.min.js"></script>
+
+<!-- Hit analytics -->
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- Directory -->
+
+<script src="/Blog//js/main.js"></script>
+
+</foot>
+
+
+</foot>
+
+</html>
