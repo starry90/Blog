@@ -1,0 +1,173 @@
+---
+layout: post
+title: "Android快速搞定代码混淆"
+subtitle: ""
+date: 2017-03-19
+author: Starry
+category: coding
+tags: android
+finished: true
+---
+
+[简书地址](https://www.jianshu.com/p/964d3ca6004e)
+
+ProGuard manual
+>https://www.guardsquare.com/en/proguard/manual/introduction
+>ProGuard is a Java class file shrinker, optimizer, obfuscator, and preverifier. The shrinking step detects and removes unused classes, fields, methods and attributes. The optimization step analyzes and optimizes the bytecode of the methods. The obfuscation step renames the remaining classes, fields, and methods using short meaningless names. These first steps make the code base smaller, more efficient, and harder to reverse-engineer. The final preverification step adds preverification information to the classes, which is required for Java Micro Edition and for Java 6 and higher.
+
+>Each of these steps is optional. For instance, ProGuard can also be used to just list dead code in an application, or to preverify class files for efficient use in Java 6.
+
+>![ProGuard_build_process.png](../images/android/ProGuard_build_process.png)
+
+>ProGuard first reads the input jars (or aars, wars, ears, zips, apks, or directories). It then subsequently shrinks, optimizes, obfuscates, and preverifies them. You can optionally let ProGuard perform multiple optimization passes. ProGuard writes the processed results to one or more output jars (or aars, wars, ears, zips, apks, or directories). The input may contain resource files, whose names and contents can optionally be updated to reflect the obfuscated class names.
+
+>ProGuard requires the library jars (or aars, wars, ears, zips, apks, or directories) of the input jars to be specified. These are essentially the libraries that you would need for compiling the code. ProGuard uses them to reconstruct the class dependencies that are necessary for proper processing. The library jars themselves always remain unchanged. You should still put them in the class path of your final application.
+
+以上，混淆分四步:
+
+1.shrink（压缩）：删除未被使用到的类，字段，方法和属性
+
+2.optimize（优化）：分析和优化字节码
+
+3.obfuscation（混淆）：使用a,b,c这样简短的无意义的名称对类，字段和方法进行重命名，这样使得，代码更精简，效率更高，更难逆向工程
+
+4.preverify（预校验）：对类添加校验信息，以符合java对类的要求，保证可执行
+
+```
+#=========================== 基本指令区 start ===========================
+#代码混淆的压缩比例，值在0-7之间
+-optimizationpasses 5
+
+-dontusemixedcaseclassnames		#混淆后类名都为小写
+
+#生成原类名和混淆后的类名的映射文件mapping 类名->转化后类名的映射
+-verbose
+
+#这样将忽略剩余的警告
+-ignorewarnings
+#如果应用程序引入的有jar包,并且想混淆jar包里面的class
+#-dontskipnonpubliclibraryclasses
+
+#不做预校验的操作
+-dontpreverify
+
+# 混淆时所采用的算法
+-optimizations !code/simplification/arithmetic,!field/*,!class/merging/*
+
+#不混淆内部类
+-keepattributes Exceptions,InnerClasses
+
+#抛出异常时保留代码行号
+-keepattributes SourceFile,LineNumberTable
+
+#http://stackoverflow.com/questions/5582383/problem-with-proguard-and-roboguice-with-inject-annotations
+#不混淆泛型
+-keepattributes Signature
+#不混淆注解
+-keepattributes *Annotation*
+
+#=========================== 基本指令区 end ===========================
+
+
+#=========================== 默认保留区 start ===========================
+#保持 安卓四大组件、Application 不被混淆
+-keep public class * extends android.app.Application
+-keep public class * extends android.app.Activity
+-keep public class * extends android.app.Service
+-keep public class * extends android.content.BroadcastReceiver
+-keep public class * extends android.content.ContentProvider
+-keep public class * extends android.app.backup.BackupAgentHelper
+-keep public class * extends android.preference.Preference
+-keep public class com.android.vending.licensing.ILicensingService
+-keep public class com.google.vending.licensing.ILicensingService
+
+# keep setters in Views so that animations can still work.
+# see http://proguard.sourceforge.net/manual/examples.html#beans
+-keepclassmembers public class * extends android.view.View {
+   void set*(***);
+   *** get*();
+}
+
+# We want to keep methods in Activity that could be used in the XML attribute onClick
+-keepclassmembers class * extends android.app.Activity {
+   public void *(android.view.View);
+}
+
+# 保持 native 方法不被混淆
+-keepclasseswithmembernames class * {
+    native <methods>;
+}
+
+# 保持自定义控件类不被混淆
+-keepclasseswithmembers class * {
+	public <init>(android.content.Context, android.util.AttributeSet);
+	public <init>(android.content.Context, android.util.AttributeSet, int);
+}
+
+#保持 枚举类不被混淆
+# For enumeration classes, see http://proguard.sourceforge.net/manual/examples.html#enumerations
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+#保持 aidl文件不被混淆
+-keep class * implements android.os.Parcelable {
+  public static final android.os.Parcelable$Creator *;
+}
+
+# The support library contains references to newer platform versions.
+# Don't warn about those in case this app is linking against an older
+# platform version.  We know about them, and they are safe.
+-dontwarn android.support.**
+
+# 保证 使用JSONObject不报错
+-keepclassmembers class * {
+    public <init>(org.json.JSONObject);
+}
+
+#保持 资源id不被混淆
+-keepclassmembers class **.R$* {
+    public static <fields>;
+}
+#=========================== 默认保留区 end ===========================
+
+
+#=========================== 自定义区 start ===========================
+#混淆 实体 的类名，但不混淆字段
+-keepclassmembers class 包名.model.** { *; }
+
+#不混淆JS
+-keepattributes *JavascriptInterface*
+#=========================== 自定义区 end ===========================
+
+
+#=========================== 第三方包 start ===========================
+#=========================================================
+#对于引用第三方包的情况，可以采用下面方式避免打包出错：
+#-dontwarn com.xx.yy.**
+#-keep class com.xx.yy.** { *;}
+#=========================================================
+#-keep class android.support.v4.** { *;}
+#-keep public class * extends android.support.v4.**{
+#	public protected *;
+#}
+
+# 不混淆glide，例子，不需要可以删除
+-keep public class * implements com.bumptech.glide.module.GlideModule
+-keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
+  **[] $VALUES;
+  public *;
+}
+#-keepresourcexmlelements manifest/application/meta-data@value=GlideModule
+
+
+#=========================== 第三方包 end ===========================
+
+```
+
+参考：
+
+1.https://www.guardsquare.com/en/proguard/manual/introduction
+
+2.http://www.jianshu.com/p/f3455ecaa56e
