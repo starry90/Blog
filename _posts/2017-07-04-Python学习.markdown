@@ -1,0 +1,147 @@
+---
+layout: post
+title: "Python学习"
+subtitle: ""
+date: 2017-07-04
+author: Starry
+category: coding
+tags: python
+finished: true
+---
+
+## 创建文件abc.txt
+```
+f = open('abc.txt', 'w')
+f.close()
+```
+ 
+## 读取文件
+```
+with open as语句用来自动调用关闭io流方法
+
+#逐行读取abc.txt内容
+with open('abc.txt', 'r') as f:
+    for line in f:
+        print line
+
+#读取二进制文件release.apk
+with open('release.apk', 'rb') as f:
+    f.read()
+
+#获取文件MD5值
+import hashlib
+with open('abc.txt', 'rb') as f:
+    md5 = hashlib.md5(f.read()).hexdigest()
+    print md5
+```
+
+## 写文件
+```
+#往abc.txt写入一行字符‘xyz’，会覆盖abc.txt内容
+with open('abc.txt', 'w') as f:
+    f.writelines('xyz')
+
+#往abc.txt中追加一行字符‘xyz’，不会覆盖abc.txt内容
+with open('abc.txt', 'a+') as f:
+    f.writelines('xyz')
+
+#读取二进制文件debug.apk生成release.apk
+with open('debug.apk', 'rb') as f:
+    with open('release.apk', 'wb') as f2:
+        f2.write(f.read())
+```
+
+## 文件下载
+```
+方式一：有时会失败（出现size=0的情况）
+import urllib
+def progress(self, blocknum, bs, size):
+    """
+    下载进度
+
+    :param blocknum: 已经下载的数据块
+    :param bs: 数据块的大小
+    :param size: 远程文件的大小
+    """
+    pro = 100.0 * blocknum * bs / size
+    # 输出%，不是\%,而是%%
+    print '%0.f%%' % pro,
+
+urllib.urlretrieve(url, filename, reporthook=progress)
+
+方式二：
+import urllib2
+def file_download(file_url, filename):
+    target_request = urllib2.Request(file_url)
+    result = urllib2.urlopen(target_request, timeout=10)
+    data = result.read()
+    with open(filename, "wb") as f:
+        f.write(data)
+
+
+file_download('http://baidu/abc.png', 'abc.png')
+
+```
+
+## 正则匹配
+```
+方式一：
+def parse_search(reg='', src=''):
+    pattern = re.compile(reg, re.S)
+    result = re.search(pattern, src)
+    if result:
+        print result.group(1)
+        print result.group()
+        return result.group(1).strip(), result.group()
+
+
+parse_search('info:(.*?)123', 'info:abc123')
+打印结果：
+abc
+info:abc123
+
+方式二：
+def parse_findall(reg='', src=''):
+    pattern = re.compile(reg, re.S)
+    items = re.findall(pattern, src)
+    for item in items:
+        print item
+
+
+parse_findall('info:(.*?)123', 'info:abc123,info:xyz123')
+打印结果：
+abc
+xyz
+```
+
+## OS相关方法
+```
+os.curdir：返回当前目录
+
+os.path.abspath('.')：当前目录
+
+os.sep：操作系统特定的路径分隔符
+
+os.path.existe(path)：指定目录或文件是否存在
+
+os.system(command)：在当前目录下运行指定命令，返回值int，如果为0表示命令执行成功
+
+os.listdir(path)：指定目录下的所有目录及文件
+
+os.path.join(path,name)：连接目录和文件
+
+os.path.basename(path)：返回指定路径文件的文件名
+
+获取当前用户的主目录路径:
+os.environ['HOME']
+os.path.expandvars('$HOME')
+os.path.expanduser('~')
+```
+
+## 抓取图片防盗链、302重定向
+```
+1）突破防盗链
+服务器一般会检查请求头文件的Referer（源页面）、User-Agent（请求端信息如何种浏览器、操作系统）等内容，以确定该请求来自本网站且非爬虫行为。因此在发送请求时要手动添加这些头文件参数，避开判定。
+2）重定向
+通过响应返回值判别请求的状态，200代表正常，302表示该资源被重定向至新地址，但是仍按照原URL进行访问，404表示网站有效，但无法访问资源。若返回302，则可通过响应头文件中的LOCATION项获取新地址。
+```
