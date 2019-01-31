@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- CSS -->
+
+  <link rel="stylesheet" href="/Blog//css/main.css">
+  <link rel="canonical" href="http://localhost:4000/Blog//coding/Android-Studio%E4%B8%AD%E7%9A%84SVN%E9%85%8D%E7%BD%AE%E5%92%8C%E4%BD%BF%E7%94%A8.html">
+  <link rel="alternate" type="application/rss+xml" title="何事秋风悲画扇" href="http://localhost:4000/Blog//feed.xml">
+
+<!-- Google font -->
+
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Noto Sans">
+
+<!-- font awesome -->
+
+<link rel="stylesheet" href="/css/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+
+  
+    <script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    
+  ga('create', 'UA-133449851-1', 'auto');
+  ga('send', 'pageview');
+    
+	</script>
+
+
+  
+
+  
+
+  </head>
+
+  <body>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Android Studio中的SVN配置和使用</title>
+  <meta name="description" content="简书地址">
+</head>
+
+
+  <div class="wrapper">
+          <header class="post-header">
+
+    <center><div class="post-title" itemprop="name headline">Android Studio中的SVN配置和使用</div>
+
+		<div class="post-meta"><i class="fa fa-calendar-o"></i> <time datetime="29 Nov 2016" itemprop="datePublished">Nov 29 2016</time>
+
+		&nbsp;&nbsp;•&nbsp;&nbsp;<i class="fa fa-user-secret"></i> <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Starry</span>
+        
+		<br>
+		<i class="fa fa-eye"></i> <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-pulse"></i></span>˚C</span>
+	</div>
+
+        
+        <div class="post-tags">
+        
+		<a class="post-tags-item" href="http://localhost:4000/Blog//tags/">svn</a>
+        
+	</div>
+    </center>
+    
+</header>
+
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+<div class="post-content">
+    <center>
+	
+	<p></p>
+	
+    </center>
+	<h2>Directory</h2>
+</div>
+
+<div id="category"></div>
+
+<div class="post-content" itemprop="articleBody">
+    <p><a href="https://www.jianshu.com/p/fe04cbc47a2b">简书地址</a></p>
+
+<p>本文以Android Studio 2.0版本为例</p>
+
+<h4 id="1tortoisesvn下载">1，TortoiseSVN下载</h4>
+
+<p><a href="https://tortoisesvn.net/downloads.html">SVN下载地址</a></p>
+
+<h4 id="2tortoisesvn安装">2，TortoiseSVN安装</h4>
+
+<p>注意需要选择command line client tools —&gt; will be installed on local hard drive，因为Android Studio配置SVN的时候需要使用到。</p>
+
+<p><img src="../images/android/svn_01.png" alt="安装SVN.jpg" /></p>
+
+<h4 id="3配置android-studio">3，配置Android Studio</h4>
+
+<p>打开Android Studio，File —&gt; Settings —&gt; Version Control —&gt; Subversion —&gt; General —&gt; User command line client ，选择自己TortoiseSVN安装目录下的bin目录里的svn.exe，如果没有找到svn.exe，重复第2步。</p>
+
+<h4 id="4配置android-studio-提交忽略文件">4，配置Android Studio 提交忽略文件</h4>
+
+<p>File —&gt; Settings —&gt; Version Control —&gt; Ignored Files 点击右侧加号添加忽略文件或目录，一般配置如下，往后提交，这些文件及目录会自动被忽略掉了。
+忽略文件</p>
+
+<p><img src="../images/android/svn_02.png" alt="忽略文件.jpg" /></p>
+
+<h4 id="5从svn服务器获取项目">5，从SVN服务器获取项目</h4>
+
+<p>VCS —&gt; Checkout form Version Control —&gt; Subversion —&gt; Checuout from Subversion 点击旁边的+号添加资源库，资源库添加成功，选择对应的项目目录，点击Checkout就可以获取项目了</p>
+
+<h4 id="6把本地项目上传到svn服务器">6，把本地项目上传到SVN服务器</h4>
+
+<p>VCS —&gt; Import into Version Control —&gt; Import into Subversion… —&gt; Import into Subversion 点击旁边的+号添加资源库，资源库添加成功，选择对应的目录，点击Import就可以把本地项目上传到服务器了</p>
+
+<h4 id="7注意">7，注意</h4>
+
+<p>如果.gitignore文件丢失，可以通过右键项目，New —&gt; .i*,.ignore file 进行添加</p>
+
+</div>
+
+<div>
+	
+	<div class="eof"></div>
+	
+</div>
+
+<div class="share">
+    <p>Share this post with: </p>
+	<a href="https://twitter.com/intent/tweet?text=Android Studio中的SVN配置和使用@&amp;url=http://localhost:4000/Blog//coding/Android-Studio%E4%B8%AD%E7%9A%84SVN%E9%85%8D%E7%BD%AE%E5%92%8C%E4%BD%BF%E7%94%A8.html" class="twitter-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/Blog//coding/Android-Studio%E4%B8%AD%E7%9A%84SVN%E9%85%8D%E7%BD%AE%E5%92%8C%E4%BD%BF%E7%94%A8.html" class="facebook-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://plus.google.com/share?url=http://localhost:4000/Blog//coding/Android-Studio%E4%B8%AD%E7%9A%84SVN%E9%85%8D%E7%BD%AE%E5%92%8C%E4%BD%BF%E7%94%A8.html" class="googleplus-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-google-plus fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+</div>
+
+
+<div id="disqus_thread"></div>
+
+
+ 
+</div>
+
+
+</article>
+
+  </div>
+
+</body>
+
+<foot>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <center>
+        
+		<p><a class="link" href="/Blog//archive/">Archive</a> /
+		<a class="link" href="/Blog//category/">Category</a> / 
+		<a class="link" href="/Blog//tags/">Tags</a> / 
+		<a class="link" href="/Blog//about/">About</a> <!-- /
+        <a class="link" href="/Blog//contact/">Contact</a> -->
+        </p>
+
+        <span><script>document.write(new Date().getFullYear());</script></span>
+        <span>&copy;</span>
+        
+		<a class="link" href="/Blog/">Starry</a>
+		<br>
+		<span>Powered by <a class="link" href="https://jekyllrb.com/" target="_blank">Jekyll</a> | </span>
+				<iframe
+			style="margin-left: 2px; margin-bottom:-5px;"
+			frameborder="0" scrolling="0" width="150px" height="20px"
+			src="https://ghbtns.com/github-btn.html?user=starry90&type=follow&count=true" >
+		</iframe>
+
+    </center>
+    
+  </div>
+
+</footer>
+
+    <foot>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Derictory -->
+
+  <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+  <script src="http://yandex.st/highlightjs/6.2/highlight.min.js"></script>
+
+<!-- Hit analytics -->
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- Directory -->
+
+<script src="/Blog//js/main.js"></script>
+
+</foot>
+
+
+</foot>
+
+</html>
