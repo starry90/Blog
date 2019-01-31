@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- CSS -->
+
+  <link rel="stylesheet" href="/Blog//css/main.css">
+  <link rel="canonical" href="http://localhost:4000/Blog//coding/RecyclerView%E4%BD%BF%E7%94%A8%E6%97%B6%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98.html">
+  <link rel="alternate" type="application/rss+xml" title="何事秋风悲画扇" href="http://localhost:4000/Blog//feed.xml">
+
+<!-- Google font -->
+
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Noto Sans">
+
+<!-- font awesome -->
+
+<link rel="stylesheet" href="/css/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+
+  
+    <script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    
+  ga('create', 'UA-133449851-1', 'auto');
+  ga('send', 'pageview');
+    
+	</script>
+
+
+  
+
+  
+
+  </head>
+
+  <body>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>RecyclerView使用时遇到的问题</title>
+  <meta name="description" content="简书地址">
+</head>
+
+
+  <div class="wrapper">
+          <header class="post-header">
+
+    <center><div class="post-title" itemprop="name headline">RecyclerView使用时遇到的问题</div>
+
+		<div class="post-meta"><i class="fa fa-calendar-o"></i> <time datetime="28 Feb 2017" itemprop="datePublished">Feb 28 2017</time>
+
+		&nbsp;&nbsp;•&nbsp;&nbsp;<i class="fa fa-user-secret"></i> <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Starry</span>
+        
+		<br>
+		<i class="fa fa-eye"></i> <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-pulse"></i></span>˚C</span>
+	</div>
+
+        
+        <div class="post-tags">
+        
+		<a class="post-tags-item" href="http://localhost:4000/Blog//tags/">android</a>
+        
+		<a class="post-tags-item" href="http://localhost:4000/Blog//tags/">recyclerview</a>
+        
+	</div>
+    </center>
+    
+</header>
+
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+<div class="post-content">
+    <center>
+	
+	<p></p>
+	
+    </center>
+	<h2>Directory</h2>
+</div>
+
+<div id="category"></div>
+
+<div class="post-content" itemprop="articleBody">
+    <p><a href="https://www.jianshu.com/p/490691084fb9">简书地址</a></p>
+
+<h4 id="1定位到列表中指定位置">1，定位到列表中指定位置</h4>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>List：
+ListView.selection(position);
+
+RecyclerView：
+ ((LinearLayoutManager)RecyclerView.getLayoutManager()).scrollToPositionWithOffset(position, 0);
+
+</code></pre></div></div>
+<h4 id="2recyclerview删除item">2，RecyclerView删除Item</h4>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>lists.remove(position); //把数据从list中remove掉
+notifyItemRemoved(position);//显示动画
+notifyDataSetChanged();//刷新列表
+</code></pre></div></div>
+
+<h4 id="3有一个常见的坑就是闪屏问题">3，有一个常见的坑就是”闪屏问题”。</h4>
+
+<p>这个问题的描述是：当Item视图中有图片和文字，当更新文字并调用notifyItemChanged()时，文字改变的同时图片会闪一下。这个问题的原因是当调用notifyItemChanged()时，会调用DefaultItemAnimator的animateChangeImpl()执行change动画，该动画会使得Item的透明度从0变为1，从而造成闪屏。</p>
+
+<p>解决办法很简单，在RecyclerView.setAdapter(mAdapter)之前，禁用change动画</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>((SimpleItemAnimator)RecyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+RecyclerView.setAdapter(mAdapter);
+</code></pre></div></div>
+
+<h4 id="4positions-in-recyclerview">4，<a href="https://developer.android.google.cn/reference/android/support/v7/widget/RecyclerView.html">Positions in RecyclerView:</a></h4>
+
+<blockquote>
+  <p>RecyclerView introduces an additional level of abstraction between the RecyclerView.Adapter and RecyclerView.LayoutManager to be able to detect data set changes in batches during a layout calculation. This saves LayoutManager from tracking adapter changes to calculate animations. It also helps with performance because all view bindings happen at the same time and unnecessary bindings are avoided.</p>
+</blockquote>
+
+<blockquote>
+  <p>For this reason, there are two types of position related methods in RecyclerView:</p>
+</blockquote>
+
+<blockquote>
+  <ul>
+    <li>layout position: Position of an item in the latest layout calculation. This is the position from the LayoutManager’s perspective.</li>
+    <li>adapter position: Position of an item in the adapter. This is the position from the Adapter’s perspective.</li>
+  </ul>
+</blockquote>
+
+<blockquote>
+  <p>These two positions are the same except the time between dispatching adapter.notify* events and calculating the updated layout.</p>
+</blockquote>
+
+<blockquote>
+  <p>Methods that return or receive <em>LayoutPosition</em> use position as of the latest layout calculation (e.g. getLayoutPosition(), findViewHolderForLayoutPosition(int)). These positions include all changes until the last layout calculation. You can rely on these positions to be consistent with what user is currently seeing on the screen. For example, if you have a list of items on the screen and user asks for the 5th element, you should use these methods as they’ll match what user is seeing.</p>
+</blockquote>
+
+<blockquote>
+  <p>The other set of position related methods are in the form of <em>AdapterPosition</em>. (e.g. getAdapterPosition(), findViewHolderForAdapterPosition(int)) You should use these methods when you need to work with up-to-date adapter positions even if they may not have been reflected to layout yet. For example, if you want to access the item in the adapter on a ViewHolder click, you should use getAdapterPosition(). Beware that these methods may not be able to calculate adapter positions if notifyDataSetChanged() has been called and new layout has not yet been calculated. For this reasons, you should carefully handle NO_POSITION or null results from these methods.</p>
+</blockquote>
+
+<blockquote>
+  <p>When writing a RecyclerView.LayoutManager you almost always want to use layout positions whereas when writing an RecyclerView.Adapter, you probably want to use adapter positions.</p>
+</blockquote>
+
+<h4 id="4error40-5-错误-方法不会覆盖或实现超类型的方法-xxxbaserecycleradapterjava">4.Error:(40, 5) 错误: 方法不会覆盖或实现超类型的方法 xxx/BaseRecyclerAdapter.java</h4>
+
+<p>Error:(40, 5) 错误 xxx不是抽象的, 并且未覆盖xxx中的抽象方法onBindViewHolder(BaseRecyclerAdapter.ViewHolder,int)</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public abstract class BaseRecyclerAdapter&lt;T&gt; extends RecyclerView.Adapter&lt;BaseRecyclerAdapter.RecyclerViewHolder&gt; {
+
+    ......
+
+    @Override
+    public void onBindViewHolder(RecyclerViewHolder holder, int position) {}
+
+    ......
+}
+</code></pre></div></div>
+<p>改成</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public abstract class BaseRecyclerAdapter&lt;T&gt; extends RecyclerView.Adapter&lt;BaseRecyclerAdapter.RecyclerViewHolder&gt; {
+
+    ......
+
+    @Override
+    public void onBindViewHolder(BaseRecyclerAdapter.RecyclerViewHolder holder, int position) {}
+
+    ......
+}
+</code></pre></div></div>
+<p>将onBindViewHolder方法的holder参数显示指定为BaseRecyclerAdapter.RecyclerViewHolder，就编译通过了</p>
+
+</div>
+
+<div>
+	
+	<div class="eof"></div>
+	
+</div>
+
+<div class="share">
+    <p>Share this post with: </p>
+	<a href="https://twitter.com/intent/tweet?text=RecyclerView使用时遇到的问题@&amp;url=http://localhost:4000/Blog//coding/RecyclerView%E4%BD%BF%E7%94%A8%E6%97%B6%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98.html" class="twitter-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/Blog//coding/RecyclerView%E4%BD%BF%E7%94%A8%E6%97%B6%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98.html" class="facebook-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://plus.google.com/share?url=http://localhost:4000/Blog//coding/RecyclerView%E4%BD%BF%E7%94%A8%E6%97%B6%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98.html" class="googleplus-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-google-plus fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+</div>
+
+
+<div id="disqus_thread"></div>
+
+
+ 
+</div>
+
+
+</article>
+
+  </div>
+
+</body>
+
+<foot>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <center>
+        
+		<p><a class="link" href="/Blog//archive/">Archive</a> /
+		<a class="link" href="/Blog//category/">Category</a> / 
+		<a class="link" href="/Blog//tags/">Tags</a> / 
+		<a class="link" href="/Blog//about/">About</a> <!-- /
+        <a class="link" href="/Blog//contact/">Contact</a> -->
+        </p>
+
+        <span><script>document.write(new Date().getFullYear());</script></span>
+        <span>&copy;</span>
+        
+		<a class="link" href="/Blog/">Starry</a>
+		<br>
+		<span>Powered by <a class="link" href="https://jekyllrb.com/" target="_blank">Jekyll</a> | </span>
+				<iframe
+			style="margin-left: 2px; margin-bottom:-5px;"
+			frameborder="0" scrolling="0" width="150px" height="20px"
+			src="https://ghbtns.com/github-btn.html?user=starry90&type=follow&count=true" >
+		</iframe>
+
+    </center>
+    
+  </div>
+
+</footer>
+
+    <foot>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Derictory -->
+
+  <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+  <script src="http://yandex.st/highlightjs/6.2/highlight.min.js"></script>
+
+<!-- Hit analytics -->
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- Directory -->
+
+<script src="/Blog//js/main.js"></script>
+
+</foot>
+
+
+</foot>
+
+</html>
