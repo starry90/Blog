@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- CSS -->
+
+  <link rel="stylesheet" href="/Blog//css/main.css">
+  <link rel="canonical" href="http://localhost:4000/Blog//coding/Android-Studio-JNI%E8%B0%83%E7%94%A8.html">
+  <link rel="alternate" type="application/rss+xml" title="何事秋风悲画扇" href="http://localhost:4000/Blog//feed.xml">
+
+<!-- Google font -->
+
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Noto Sans">
+
+<!-- font awesome -->
+
+<link rel="stylesheet" href="/css/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+
+  
+    <script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    
+  ga('create', 'UA-133449851-1', 'auto');
+  ga('send', 'pageview');
+    
+	</script>
+
+
+  
+
+  
+
+  </head>
+
+  <body>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Android Studio JNI调用</title>
+  <meta name="description" content="简书地址">
+</head>
+
+
+  <div class="wrapper">
+          <header class="post-header">
+
+    <center><div class="post-title" itemprop="name headline">Android Studio JNI调用</div>
+
+		<div class="post-meta"><i class="fa fa-calendar-o"></i> <time datetime="29 Mar 2017" itemprop="datePublished">Mar 29 2017</time>
+
+		&nbsp;&nbsp;•&nbsp;&nbsp;<i class="fa fa-user-secret"></i> <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Starry</span>
+        
+		<br>
+		<i class="fa fa-eye"></i> <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-pulse"></i></span>˚C</span>
+	</div>
+
+        
+        <div class="post-tags">
+        
+		<a class="post-tags-item" href="http://localhost:4000/Blog//tags/">android</a>
+        
+	</div>
+    </center>
+    
+</header>
+
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+<div class="post-content">
+    <center>
+	
+	<p></p>
+	
+    </center>
+	<h2>Directory</h2>
+</div>
+
+<div id="category"></div>
+
+<div class="post-content" itemprop="articleBody">
+    <p><a href="https://www.jianshu.com/p/7ea781e6b261">简书地址</a></p>
+
+<h2 id="下载地址"><a href="https://developer.android.google.cn/ndk/downloads/index.html">下载地址</a></h2>
+
+<blockquote>
+  <p>https://developer.android.google.cn/ndk/guides/index.html</p>
+</blockquote>
+
+<blockquote>
+  <p>原生开发工具包 (NDK) 是一组可让您在 Android 应用中利用 C 和 C++ 代码的工具。 可用以从您自己的源代码构建，或者利用现有的预构建库。</p>
+</blockquote>
+
+<blockquote>
+  <p>NDK 不适用于大多数初学的 Android 编程者，对许多类型的 Android 应用没什么价值。 因为它不可避免地会增加开发过程的复杂性，所以通常不值得使用。 但如果您需要执行以下操作，它可能很有用：</p>
+</blockquote>
+
+<blockquote>
+  <p>从设备获取卓越性能以用于计算密集型应用，例如游戏或物理模拟。
+重复使用您自己或其他开发者的 C 或 C++ 库。</p>
+</blockquote>
+
+<h2 id="编译环境">编译环境</h2>
+
+<p>gradle 2.1</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dependencies {
+        classpath 'com.android.tools.build:gradle:2.1.0'
+    }
+</code></pre></div></div>
+<p>NDK版本</p>
+<blockquote>
+  <p>android-ndk-r13b-windows-x86_64
+<a href="https://developer.android.google.cn/ndk/downloads/index.html">谷歌中国下载</a></p>
+</blockquote>
+
+<p>Android Studio 2.0版本</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>设置NDK目录
+File —&gt; Project Structure —&gt; SDK Location —&gt; Android NDK location
+</code></pre></div></div>
+
+<h2 id="环境配置">环境配置</h2>
+
+<p>1，在项目根目录下的gradle.properties文件里添加</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>android.useDeprecatedNdk=true
+</code></pre></div></div>
+
+<p>2，在项目根目录下的local.properties文件里添加ndk的目录</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ndk.dir=D\:\\work\\android-ndk-r13b-windows-x86_64
+</code></pre></div></div>
+<p>3，在项目app目录下的build.gradle文件里添加如下片段</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>android {
+    ...
+
+    defaultConfig {
+        ...
+
+        ndk {
+            moduleName "Sample" //模块名称，对应的动态链接库名称libSample
+            ldLibs = ["log"] //在JNI打log 必须加上log,否则会报错log函数未定义
+        }
+
+    }
+}
+</code></pre></div></div>
+
+<h2 id="编译工程">编译工程</h2>
+
+<p>1，创建一个类，编写本地方法，加载so库</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">com</span><span class="p">.</span><span class="n">starry</span><span class="p">.</span><span class="n">jni</span><span class="p">;</span>
+
+<span class="k">public</span> <span class="n">class</span> <span class="n">JNISample</span> <span class="p">{</span>
+
+    <span class="n">static</span> <span class="p">{</span>
+        <span class="nf">System</span><span class="p">.</span><span class="n">loadLibrary</span><span class="p">(</span><span class="s2">"Sample"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="n">native</span> <span class="k">String</span> <span class="n">getString</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>2，生成头文件，打开Android Studio Terminal窗口（左下角），输入以下指令</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd  app/src/main/java  //进入到java目录
+javah -jni com.starry.jni.JNISample //生成 点h文件
+</code></pre></div></div>
+<p>3，新建jni目录，右键工程下的app目录 —&gt; Folder —&gt; JNI Folder —&gt; New Android Component —&gt; Finish，默认是会在app/src/main目录下生成jni目录</p>
+
+<p>4，把第二步生成的com_starry_jni_JNISample.h文件拷贝至第三步生成的jni目录下</p>
+
+<p>5，右键jni目录，New —&gt; C/C++ Source File，新建与头文件相同名称的cpp文件com_starry_jni_JNISample.cpp，完整代码如下</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#include "com_starry_jni_JNISample.h"
+
+JNIEXPORT jstring JNICALL Java_com_starry_jni_JNISample_getString (JNIEnv *env, jobject obj){
+
+    return env -&gt; NewStringUTF("我来自JNI");
+}
+</code></pre></div></div>
+<p>6，在Activity里调用，代码如下</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>...
+JNISample jniSample = new JNISample();
+String string = jniSample.getString();
+...
+</code></pre></div></div>
+<p>7，重新编译下工程或直接布署代码到手机上，成功就会在app/build/intermediates/ndk/debug/lib目录下生成相应的so库文件</p>
+
+<p>8，<a href="https://github.com/starry90/JNI-Sample">示例代码下载</a></p>
+
+<p>注：</p>
+
+<p>1，JNISample类里边不能用中文件字符</p>
+
+<p>2，我的NDK是从官网下载的，使用Android Studio提供的NDK死活编译不过</p>
+
+<p>3，cpp文件和h文件名称可以自定义，但是最好按照ndk生成的格式命名，方法命名必须按照生成的头文件里的规范命名（Java_包名_类名_方法名称）</p>
+
+<p>4，D:\work\android-ndk-r13b-windows-x86_64\platforms\android-22\arch-arm\usr\include目录里包含了ndk开发所有使用到的头文件，做jni开发可以查看jni.h头文件里提供函数。</p>
+
+<p>5，点击右上角Gradle —&gt; 当前项目 —&gt; app —&gt; Tasks —&gt; Build —&gt; assembleRelease，打包完成，.so文件会自动拷贝到lib目录下，不需要手动拷贝</p>
+
+</div>
+
+<div>
+	
+	<div class="eof"></div>
+	
+</div>
+
+<div class="share">
+    <p>Share this post with: </p>
+	<a href="https://twitter.com/intent/tweet?text=Android Studio JNI调用@&amp;url=http://localhost:4000/Blog//coding/Android-Studio-JNI%E8%B0%83%E7%94%A8.html" class="twitter-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/Blog//coding/Android-Studio-JNI%E8%B0%83%E7%94%A8.html" class="facebook-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://plus.google.com/share?url=http://localhost:4000/Blog//coding/Android-Studio-JNI%E8%B0%83%E7%94%A8.html" class="googleplus-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-google-plus fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+</div>
+
+
+<div id="disqus_thread"></div>
+
+
+ 
+</div>
+
+
+</article>
+
+  </div>
+
+</body>
+
+<foot>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <center>
+        
+		<p><a class="link" href="/Blog//archive/">Archive</a> /
+		<a class="link" href="/Blog//category/">Category</a> / 
+		<a class="link" href="/Blog//tags/">Tags</a> / 
+		<a class="link" href="/Blog//about/">About</a> <!-- /
+        <a class="link" href="/Blog//contact/">Contact</a> -->
+        </p>
+
+        <span><script>document.write(new Date().getFullYear());</script></span>
+        <span>&copy;</span>
+        
+		<a class="link" href="/Blog/">Starry</a>
+		<br>
+		<span>Powered by <a class="link" href="https://jekyllrb.com/" target="_blank">Jekyll</a> | </span>
+				<iframe
+			style="margin-left: 2px; margin-bottom:-5px;"
+			frameborder="0" scrolling="0" width="150px" height="20px"
+			src="https://ghbtns.com/github-btn.html?user=starry90&type=follow&count=true" >
+		</iframe>
+
+    </center>
+    
+  </div>
+
+</footer>
+
+    <foot>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Derictory -->
+
+  <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+  <script src="http://yandex.st/highlightjs/6.2/highlight.min.js"></script>
+
+<!-- Hit analytics -->
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- Directory -->
+
+<script src="/Blog//js/main.js"></script>
+
+</foot>
+
+
+</foot>
+
+</html>
