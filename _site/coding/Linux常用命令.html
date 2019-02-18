@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- CSS -->
+
+  <link rel="stylesheet" href="/Blog//css/main.css">
+  <link rel="canonical" href="http://localhost:4000/Blog//coding/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4.html">
+  <link rel="alternate" type="application/rss+xml" title="何事秋风悲画扇" href="http://localhost:4000/Blog//feed.xml">
+
+<!-- Google font -->
+
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Noto Sans">
+
+<!-- font awesome -->
+
+<link rel="stylesheet" href="/css/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+
+  
+    <script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    
+  ga('create', 'UA-133449851-1', 'auto');
+  ga('send', 'pageview');
+    
+	</script>
+
+
+  
+
+  
+
+  </head>
+
+  <body>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Linux常用命令</title>
+  <meta name="description" content="挂载和卸载分区">
+</head>
+
+
+  <div class="wrapper">
+          <header class="post-header">
+
+    <center><div class="post-title" itemprop="name headline">Linux常用命令</div>
+
+		<div class="post-meta"><i class="fa fa-calendar-o"></i> <time datetime="03 Aug 2017" itemprop="datePublished">Aug 3 2017</time>
+
+		&nbsp;&nbsp;•&nbsp;&nbsp;<i class="fa fa-user-secret"></i> <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Starry</span>
+        
+		<br>
+		<i class="fa fa-eye"></i> <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-pulse"></i></span>˚C</span>
+	</div>
+
+        
+        <div class="post-tags">
+        
+		<a class="post-tags-item" href="http://localhost:4000/Blog//tags/">linux</a>
+        
+	</div>
+    </center>
+    
+</header>
+
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+<div class="post-content">
+    <center>
+	
+	<p></p>
+	
+    </center>
+	<h2>Directory</h2>
+</div>
+
+<div id="category"></div>
+
+<div class="post-content" itemprop="articleBody">
+    <h2 id="挂载和卸载分区">挂载和卸载分区</h2>
+
+<p>1.查看磁盘情况</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo fdisk -l
+</code></pre></div></div>
+
+<p>2.显示挂载情况</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo df -l
+</code></pre></div></div>
+
+<p>3.挂载分区sda6到/mnt下 注意：如果sda6已挂载需要先卸载</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo mount /dev/sda6 /mnt
+</code></pre></div></div>
+
+<p>4.卸载分区sda6</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo umount /dev/sda6
+</code></pre></div></div>
+
+<p>5.永久挂载分区
+a.获取文件系统UUID和类型</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo blkid /dev/sda6
+#/dev/sda6: LABEL="M-fM-^VM-^GM-fM-!M-#" UUID="98C01176C0115BB6" TYPE="ntfs" PARTUUID="d52d72a6-06"
+</code></pre></div></div>
+<p>b.在/etc/fstab文件末尾加上以下内容</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>UUID=98C01176C0115BB6 /mnt ntfs defaults 0 0
+#&lt;file system&gt;  &lt;mount point&gt;  &lt;type&gt;  &lt;options&gt;  &lt;dump&gt;  &lt;pass&gt;
+#1.文件系统 2.挂载点 3.类型 4.选项 5.0表示不备份 6.必须为0或2(除非引导分区为1)
+</code></pre></div></div>
+
+<h2 id="文件操作">文件操作</h2>
+
+<p>1.cat 显示文件内容</p>
+
+<p>2.wc 查看文件的行数，单词数，字符数</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wc -l   #行数
+wc -w   #单词数
+wc -c   #字符数
+</code></pre></div></div>
+
+<p>3.cp 复制文件</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cp ab.txt temp.txt  #将文件ab.txt复制一份，并取名为temp.txt
+</code></pre></div></div>
+
+<p>4.mv 重命名</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mv ab.txt temp.txt  #将文件ab.txt重命名为temp.txt
+执行cp和mv命令前，如果temp.txt已经存在，那么temp.txt会被覆盖
+</code></pre></div></div>
+
+<p>5.rm 删除文件，可以同时删除多个文件</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>rm -rf abc  删除abc目录或文件
+</code></pre></div></div>
+
+<p>6.touch 创建文件</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>touch abc.txt  创建abc.txt文件
+
+</code></pre></div></div>
+
+<h2 id="目录操作">目录操作</h2>
+
+<p>1.pwd 显示当前目录</p>
+
+<p>2.cd 切换目录</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cd ..   #切换到上一级目录
+cd      #返回宿主目录
+cd #    #返回宿主目录
+</code></pre></div></div>
+
+<p>3.ls 列出文件清单</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ls -l
+#操作权限：  d rwx r-x r-x   r可读 w可写 x可执行
+#           - --- --- ---
+#           0 123 456 789
+#0：d代表目录 -代表普通文件 b,c,l,p代表特殊文件
+#1-3：当前用户，4-6：当前用户所在组，7-9：其它用户的权限
+</code></pre></div></div>
+
+<p>4.mkdir 创建目录</p>
+
+<p>5.rmdir 删除目录，只能删除空目录</p>
+
+<h2 id="标准输入和输出">标准输入和输出</h2>
+
+<p>1.输出重定向</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cat a.txt &gt; b.txt   #将命令输出的内容写到b.txt，会覆盖b.txt原有内容
+cat a.txt &gt;&gt; b.txt  #将命令输出的内容追加到b.txt内容的后边
+</code></pre></div></div>
+
+<p>2.输入重定向</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wc -l &lt; b.txt       #计算b.txt文件的行数
+</code></pre></div></div>
+
+<p>3.管道（|）把前一条命令的输出当作后一条命令的输入</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cat a.txt | wc -l    #输出a.txt的行数
+</code></pre></div></div>
+
+<p>4.过滤器，可以读取标准输入的而且能把结果写到标准输出命令
+wc, cat, sort</p>
+
+<p>5.一行输入多个命令，用分号隔开</p>
+
+<p>6.命令发送到后台</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cat date &gt; out.txt &amp;    #把时间写到out.txt在后台运行
+</code></pre></div></div>
+
+<p>7.ps 查看正在运行的进程信息</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ps -f   #查看运行中进程详细信息
+ps -a   #查看所有运行中的进程
+</code></pre></div></div>
+
+<p>8.cut 剪出数据域</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>cut  data -c1,3,5  剪出data文件每行第1，第3，第5个字符
+cut  data -c3-5  剪出data文件每行第3至5的字符
+cut  data -c-8  剪出data文件每行第1至8的字符
+</code></pre></div></div>
+
+<h2 id="其它命令">其它命令</h2>
+
+<p>1.du 汇总文件的磁盘使用情况</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>du -sh workspace/  查看workspace文件夹占用磁盘大小
+</code></pre></div></div>
+
+<p>2.dpkg 查看安装的所有软件</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>dpkg -l 
+</code></pre></div></div>
+
+<p>3.ubuntu主文件夹打不开</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>killall nautilus
+</code></pre></div></div>
+
+<p>4.卸载应用（xxx）并删除所有的配置文件</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt-get --purge remove xxx
+</code></pre></div></div>
+
+<p>5.批量替换</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>grep -rl "192.168.1.99" work|xargs sed -i 's/192.168.1.99/192.168.1.100/g'
+把work文件夹及子文件夹里所有包含‘192.168.1.99’的文件中的192.168.1.99替换成192.168.1.100
+</code></pre></div></div>
+
+
+</div>
+
+<div>
+	
+	<div class="eof"></div>
+	
+</div>
+
+<div class="share">
+    <p>Share this post with: </p>
+	<a href="https://twitter.com/intent/tweet?text=Linux常用命令@&amp;url=http://localhost:4000/Blog//coding/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4.html" class="twitter-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/Blog//coding/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4.html" class="facebook-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://plus.google.com/share?url=http://localhost:4000/Blog//coding/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4.html" class="googleplus-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-google-plus fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+</div>
+
+
+<div id="disqus_thread"></div>
+
+
+ 
+</div>
+
+
+</article>
+
+  </div>
+
+</body>
+
+<foot>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <center>
+        
+		<p><a class="link" href="/Blog//archive/">Archive</a> /
+		<a class="link" href="/Blog//category/">Category</a> / 
+		<a class="link" href="/Blog//tags/">Tags</a> / 
+		<a class="link" href="/Blog//about/">About</a> <!-- /
+        <a class="link" href="/Blog//contact/">Contact</a> -->
+        </p>
+
+        <span><script>document.write(new Date().getFullYear());</script></span>
+        <span>&copy;</span>
+        
+		<a class="link" href="/Blog/">Starry</a>
+		<br>
+		<span>Powered by <a class="link" href="https://jekyllrb.com/" target="_blank">Jekyll</a> | </span>
+				<iframe
+			style="margin-left: 2px; margin-bottom:-5px;"
+			frameborder="0" scrolling="0" width="150px" height="20px"
+			src="https://ghbtns.com/github-btn.html?user=starry90&type=follow&count=true" >
+		</iframe>
+
+    </center>
+    
+  </div>
+
+</footer>
+
+    <foot>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Derictory -->
+
+  <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+  <script src="http://yandex.st/highlightjs/6.2/highlight.min.js"></script>
+
+<!-- Hit analytics -->
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- Directory -->
+
+<script src="/Blog//js/main.js"></script>
+
+</foot>
+
+
+</foot>
+
+</html>
