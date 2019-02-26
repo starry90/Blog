@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- CSS -->
+
+  <link rel="stylesheet" href="/Blog//css/main.css">
+  <link rel="canonical" href="http://localhost:4000/Blog//coding/Linux%E4%B8%8Brepo%E8%8E%B7%E5%8F%96%E4%BB%A3%E7%A0%81.html">
+  <link rel="alternate" type="application/rss+xml" title="何事秋风悲画扇" href="http://localhost:4000/Blog//feed.xml">
+
+<!-- Google font -->
+
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Noto Sans">
+
+<!-- font awesome -->
+
+<link rel="stylesheet" href="/css/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+
+  
+    <script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    
+  ga('create', 'UA-133449851-1', 'auto');
+  ga('send', 'pageview');
+    
+	</script>
+
+
+  
+
+  
+
+  </head>
+
+  <body>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Linux下repo获取代码</title>
+  <meta name="description" content="1.设置代理export HTTP_PROXY=http://192.168.1.100:8888export HTTPS_PROXY=http://192.168.1.100:8888">
+</head>
+
+
+  <div class="wrapper">
+          <header class="post-header">
+
+    <center><div class="post-title" itemprop="name headline">Linux下repo获取代码</div>
+
+		<div class="post-meta"><i class="fa fa-calendar-o"></i> <time datetime="15 Nov 2018" itemprop="datePublished">Nov 15 2018</time>
+
+		&nbsp;&nbsp;•&nbsp;&nbsp;<i class="fa fa-user-secret"></i> <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Starry</span>
+        
+		<br>
+		<i class="fa fa-eye"></i> <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-pulse"></i></span>˚C</span>
+	</div>
+
+        
+        <div class="post-tags">
+        
+		<a class="post-tags-item" href="http://localhost:4000/Blog//tags/">linux</a>
+        
+	</div>
+    </center>
+    
+</header>
+
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+<div class="post-content">
+    <center>
+	
+	<p></p>
+	
+    </center>
+	<h2>Directory</h2>
+</div>
+
+<div id="category"></div>
+
+<div class="post-content" itemprop="articleBody">
+    <h2 id="1设置代理">1.设置代理</h2>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>export HTTP_PROXY=http://192.168.1.100:8888
+export HTTPS_PROXY=http://192.168.1.100:8888
+</code></pre></div></div>
+
+<h2 id="2安装repo">2.安装repo</h2>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt install repo
+</code></pre></div></div>
+
+<h2 id="3初始化repo">3.初始化repo</h2>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>repo init
+</code></pre></div></div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>注：初始化需要从如下连接获取数据，需要翻墙或设置代理(参照第1步)
+Get https://gerrit.googlesource.com/git-repo/clone.bundle
+Get https://gerrit.googlesource.com/git-repo
+</code></pre></div></div>
+
+<h2 id="4获取代码">4.获取代码</h2>
+<p>./repo_init.sh {develop group name} {Gerrit user name} {branch name}</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./repo_init.sh client liudehua develop
+</code></pre></div></div>
+
+<p>repo_init.sh脚本源码如下</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/usr/bin/env bash</span>
+
+<span class="nv">PATH_REPO</span><span class="o">=</span><span class="s2">"~/bin/repo"</span>
+<span class="k">if</span> <span class="o">[</span> <span class="nt">-f</span> <span class="k">${</span><span class="nv">PATH_REPO</span><span class="k">}</span> <span class="o">]</span> <span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"repo download ..."</span>
+    <span class="nb">mkdir</span> <span class="nt">-p</span> ~/bin
+    <span class="nv">PATH</span><span class="o">=</span>~/bin:<span class="nv">$PATH</span>
+    curl https://storage.googleapis.com/git-repo-downloads/repo <span class="o">&gt;</span> ~/bin/repo
+    <span class="nb">chmod </span>a+x ~/bin/repo
+<span class="k">fi
+
+if</span> <span class="o">[</span> <span class="nv">$# </span><span class="o">!=</span> 3 <span class="o">]</span> <span class="p">;</span> <span class="k">then
+    </span><span class="nb">echo</span> <span class="s2">"input develop name and user name and branch name, such as: ./repo_init.sh your-dev-group-name your-gerrit-name branch-name"</span>
+    <span class="nb">exit </span>1<span class="p">;</span>
+<span class="k">fi
+
+</span><span class="nv">DEV_GROUP_NAME</span><span class="o">=</span><span class="nv">$1</span>
+<span class="nv">USER_NAME</span><span class="o">=</span><span class="nv">$2</span>
+<span class="nv">BRANCH_NAME</span><span class="o">=</span><span class="nv">$3</span>
+<span class="nv">HOST</span><span class="o">=</span>192.168.1.39:29418
+repo init <span class="nt">-u</span> ssh://<span class="k">${</span><span class="nv">USER_NAME</span><span class="k">}</span>@<span class="k">${</span><span class="nv">HOST</span><span class="k">}</span>/<span class="k">${</span><span class="nv">DEV_GROUP_NAME</span><span class="k">}</span>/platform <span class="nt">--repo-url</span><span class="o">=</span>ssh://<span class="k">${</span><span class="nv">USER_NAME</span><span class="k">}</span>@<span class="k">${</span><span class="nv">HOST</span><span class="k">}</span>/urepo <span class="nt">--repo-branch</span><span class="o">=</span>stable <span class="nt">-b</span> <span class="k">${</span><span class="nv">BRANCH_NAME</span><span class="k">}</span> <span class="nt">-m</span> <span class="k">${</span><span class="nv">DEV_GROUP_NAME</span><span class="k">}</span>.xml
+repo <span class="nb">sync</span>
+</code></pre></div></div>
+
+</div>
+
+<div>
+	
+	<div class="eof"></div>
+	
+</div>
+
+<div class="share">
+    <p>Share this post with: </p>
+	<a href="https://twitter.com/intent/tweet?text=Linux下repo获取代码@&amp;url=http://localhost:4000/Blog//coding/Linux%E4%B8%8Brepo%E8%8E%B7%E5%8F%96%E4%BB%A3%E7%A0%81.html" class="twitter-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/Blog//coding/Linux%E4%B8%8Brepo%E8%8E%B7%E5%8F%96%E4%BB%A3%E7%A0%81.html" class="facebook-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://plus.google.com/share?url=http://localhost:4000/Blog//coding/Linux%E4%B8%8Brepo%E8%8E%B7%E5%8F%96%E4%BB%A3%E7%A0%81.html" class="googleplus-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-google-plus fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+</div>
+
+
+<div id="disqus_thread"></div>
+
+
+ 
+</div>
+
+
+</article>
+
+  </div>
+
+</body>
+
+<foot>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <center>
+        
+		<p><a class="link" href="/Blog//archive/">Archive</a> /
+		<a class="link" href="/Blog//category/">Category</a> / 
+		<a class="link" href="/Blog//tags/">Tags</a> / 
+		<a class="link" href="/Blog//about/">About</a> <!-- /
+        <a class="link" href="/Blog//contact/">Contact</a> -->
+        </p>
+
+        <span><script>document.write(new Date().getFullYear());</script></span>
+        <span>&copy;</span>
+        
+		<a class="link" href="/Blog/">Starry</a>
+		<br>
+		<span>Powered by <a class="link" href="https://jekyllrb.com/" target="_blank">Jekyll</a> | </span>
+				<iframe
+			style="margin-left: 2px; margin-bottom:-5px;"
+			frameborder="0" scrolling="0" width="150px" height="20px"
+			src="https://ghbtns.com/github-btn.html?user=starry90&type=follow&count=true" >
+		</iframe>
+
+    </center>
+    
+  </div>
+
+</footer>
+
+    <foot>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Derictory -->
+
+  <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+  <script src="http://yandex.st/highlightjs/6.2/highlight.min.js"></script>
+
+<!-- Hit analytics -->
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- Directory -->
+
+<script src="/Blog//js/main.js"></script>
+
+</foot>
+
+
+</foot>
+
+</html>
