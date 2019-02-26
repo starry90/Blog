@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- CSS -->
+
+  <link rel="stylesheet" href="/Blog//css/main.css">
+  <link rel="canonical" href="http://localhost:4000/Blog//coding/Linux%E7%B3%BB%E7%BB%9F%E4%B8%8B%E5%8F%8D%E7%BC%96%E8%AF%91apk.html">
+  <link rel="alternate" type="application/rss+xml" title="何事秋风悲画扇" href="http://localhost:4000/Blog//feed.xml">
+
+<!-- Google font -->
+
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Noto Sans">
+
+<!-- font awesome -->
+
+<link rel="stylesheet" href="/css/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+
+  
+    <script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    
+  ga('create', 'UA-133449851-1', 'auto');
+  ga('send', 'pageview');
+    
+	</script>
+
+
+  
+
+  
+
+  </head>
+
+  <body>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Linux系统下反编译apk</title>
+  <meta name="description" content="enjarify 反编译apk，jadx 查看jar源码，apktool查看资源文件">
+</head>
+
+
+  <div class="wrapper">
+          <header class="post-header">
+
+    <center><div class="post-title" itemprop="name headline">Linux系统下反编译apk</div>
+
+		<div class="post-meta"><i class="fa fa-calendar-o"></i> <time datetime="16 Mar 2018" itemprop="datePublished">Mar 16 2018</time>
+
+		&nbsp;&nbsp;•&nbsp;&nbsp;<i class="fa fa-user-secret"></i> <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Starry</span>
+        
+		<br>
+		<i class="fa fa-eye"></i> <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-pulse"></i></span>˚C</span>
+	</div>
+
+        
+        <div class="post-tags">
+        
+		<a class="post-tags-item" href="http://localhost:4000/Blog//tags/">linux</a>
+        
+	</div>
+    </center>
+    
+</header>
+
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+<div class="post-content">
+    <center>
+	
+	<p></p>
+	
+    </center>
+	<h2>Directory</h2>
+</div>
+
+<div id="category"></div>
+
+<div class="post-content" itemprop="articleBody">
+    <p>enjarify 反编译apk，jadx 查看jar源码，apktool查看资源文件</p>
+
+<h2 id="一enjarify-反编译apk">一、enjarify 反编译apk</h2>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ git clone https://github.com/google/enjarify.git
+$ cd enjarify
+$ ./enjarify.sh yourapp.apk
+</code></pre></div></div>
+
+<h2 id="二jadx-查看jar源码">二、jadx 查看jar源码</h2>
+<h3 id="1build-jadx">1.build jadx</h3>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ git clone https://github.com/skylot/jadx.git
+$ cd jadx
+$ ./gradlew dist
+</code></pre></div></div>
+
+<h3 id="2run-jadx">2.run jadx</h3>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ cd build/jadx/
+$ bin/jadx-gui lib/yourlib.jar
+</code></pre></div></div>
+
+<h2 id="三apktool查看资源文件-httpsibotpeachesgithubioapktoolinstall">三、apktool查看资源文件 https://ibotpeaches.github.io/Apktool/install/</h2>
+<ol>
+  <li><a href="https://github.com/iBotPeaches/Apktool/releases">下载Apktool</a></li>
+  <li><a href="https://ibotpeaches.github.io/Apktool/install/">安装Apktool</a></li>
+  <li><a href="https://ibotpeaches.github.io/Apktool/documentation/">查看apk资源文件</a>
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ apktool d weixin.apk
+I: Using Apktool 2.3.0 on weixin.apk
+I: Loading resource table...
+I: Decoding AndroidManifest.xml with resources...
+S: WARNING: Could not write to (/home/username/.local/share/apktool/framework), using /tmp instead...
+S: Please be aware this is a volatile directory and frameworks could go missing, please utilize --frame-path if the default storage directory is unavailable
+I: Loading resource table from file: /tmp/1.apk
+I: Regular manifest package...
+I: Decoding file-resources...
+I: Decoding values */* XMLs...
+I: Baksmaling classes.dex...
+I: Baksmaling classes2.dex...
+I: Baksmaling classes3.dex...
+I: Baksmaling classes4.dex...
+I: Baksmaling classes5.dex...
+I: Baksmaling classes6.dex...
+I: Copying assets and libs...
+I: Copying unknown files...
+I: Copying original files...
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+</div>
+
+<div>
+	
+	<div class="eof"></div>
+	
+</div>
+
+<div class="share">
+    <p>Share this post with: </p>
+	<a href="https://twitter.com/intent/tweet?text=Linux系统下反编译apk@&amp;url=http://localhost:4000/Blog//coding/Linux%E7%B3%BB%E7%BB%9F%E4%B8%8B%E5%8F%8D%E7%BC%96%E8%AF%91apk.html" class="twitter-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/Blog//coding/Linux%E7%B3%BB%E7%BB%9F%E4%B8%8B%E5%8F%8D%E7%BC%96%E8%AF%91apk.html" class="facebook-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://plus.google.com/share?url=http://localhost:4000/Blog//coding/Linux%E7%B3%BB%E7%BB%9F%E4%B8%8B%E5%8F%8D%E7%BC%96%E8%AF%91apk.html" class="googleplus-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-google-plus fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+</div>
+
+
+<div id="disqus_thread"></div>
+
+
+ 
+</div>
+
+
+</article>
+
+  </div>
+
+</body>
+
+<foot>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <center>
+        
+		<p><a class="link" href="/Blog//archive/">Archive</a> /
+		<a class="link" href="/Blog//category/">Category</a> / 
+		<a class="link" href="/Blog//tags/">Tags</a> / 
+		<a class="link" href="/Blog//about/">About</a> <!-- /
+        <a class="link" href="/Blog//contact/">Contact</a> -->
+        </p>
+
+        <span><script>document.write(new Date().getFullYear());</script></span>
+        <span>&copy;</span>
+        
+		<a class="link" href="/Blog/">Starry</a>
+		<br>
+		<span>Powered by <a class="link" href="https://jekyllrb.com/" target="_blank">Jekyll</a> | </span>
+				<iframe
+			style="margin-left: 2px; margin-bottom:-5px;"
+			frameborder="0" scrolling="0" width="150px" height="20px"
+			src="https://ghbtns.com/github-btn.html?user=starry90&type=follow&count=true" >
+		</iframe>
+
+    </center>
+    
+  </div>
+
+</footer>
+
+    <foot>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Derictory -->
+
+  <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+  <script src="http://yandex.st/highlightjs/6.2/highlight.min.js"></script>
+
+<!-- Hit analytics -->
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- Directory -->
+
+<script src="/Blog//js/main.js"></script>
+
+</foot>
+
+
+</foot>
+
+</html>

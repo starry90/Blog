@@ -1,0 +1,59 @@
+---
+layout: post
+title: "Linux系统下反编译apk"
+subtitle: ""
+date: 2018-03-16
+author: Starry
+category: coding
+tags: linux
+finished: true
+---
+
+enjarify 反编译apk，jadx 查看jar源码，apktool查看资源文件
+
+## 一、enjarify 反编译apk
+```
+$ git clone https://github.com/google/enjarify.git
+$ cd enjarify
+$ ./enjarify.sh yourapp.apk
+```
+
+## 二、jadx 查看jar源码
+### 1.build jadx
+```
+$ git clone https://github.com/skylot/jadx.git
+$ cd jadx
+$ ./gradlew dist
+```
+
+### 2.run jadx
+```
+$ cd build/jadx/
+$ bin/jadx-gui lib/yourlib.jar
+```
+
+## 三、apktool查看资源文件 https://ibotpeaches.github.io/Apktool/install/
+1. [下载Apktool](https://github.com/iBotPeaches/Apktool/releases)
+2. [安装Apktool](https://ibotpeaches.github.io/Apktool/install/)
+3. [查看apk资源文件](https://ibotpeaches.github.io/Apktool/documentation/)
+```
+$ apktool d weixin.apk
+I: Using Apktool 2.3.0 on weixin.apk
+I: Loading resource table...
+I: Decoding AndroidManifest.xml with resources...
+S: WARNING: Could not write to (/home/username/.local/share/apktool/framework), using /tmp instead...
+S: Please be aware this is a volatile directory and frameworks could go missing, please utilize --frame-path if the default storage directory is unavailable
+I: Loading resource table from file: /tmp/1.apk
+I: Regular manifest package...
+I: Decoding file-resources...
+I: Decoding values */* XMLs...
+I: Baksmaling classes.dex...
+I: Baksmaling classes2.dex...
+I: Baksmaling classes3.dex...
+I: Baksmaling classes4.dex...
+I: Baksmaling classes5.dex...
+I: Baksmaling classes6.dex...
+I: Copying assets and libs...
+I: Copying unknown files...
+I: Copying original files...
+```
