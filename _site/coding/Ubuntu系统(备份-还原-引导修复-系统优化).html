@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- CSS -->
+
+  <link rel="stylesheet" href="/Blog//css/main.css">
+  <link rel="canonical" href="http://localhost:4000/Blog//coding/Ubuntu%E7%B3%BB%E7%BB%9F(%E5%A4%87%E4%BB%BD-%E8%BF%98%E5%8E%9F-%E5%BC%95%E5%AF%BC%E4%BF%AE%E5%A4%8D-%E7%B3%BB%E7%BB%9F%E4%BC%98%E5%8C%96).html">
+  <link rel="alternate" type="application/rss+xml" title="何事秋风悲画扇" href="http://localhost:4000/Blog//feed.xml">
+
+<!-- Google font -->
+
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Noto Sans">
+
+<!-- font awesome -->
+
+<link rel="stylesheet" href="/css/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+
+  
+    <script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    
+  ga('create', 'UA-133449851-1', 'auto');
+  ga('send', 'pageview');
+    
+	</script>
+
+
+  
+
+  
+
+  </head>
+
+  <body>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Ubuntu系统(备份-还原-引导修复-系统优化)</title>
+  <meta name="description" content="一、备份系统背景：公司为每人加装一块256G固态硬盘，为了让系统运行在固态硬盘上，又不想重装系统，主要是新系统装软件，配置这配置那的烦！备份还原这种方式更适合">
+</head>
+
+
+  <div class="wrapper">
+          <header class="post-header">
+
+    <center><div class="post-title" itemprop="name headline">Ubuntu系统(备份-还原-引导修复-系统优化)</div>
+
+		<div class="post-meta"><i class="fa fa-calendar-o"></i> <time datetime="25 Jan 2019" itemprop="datePublished">Jan 25 2019</time>
+
+		&nbsp;&nbsp;•&nbsp;&nbsp;<i class="fa fa-user-secret"></i> <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Starry</span>
+        
+		<br>
+		<i class="fa fa-eye"></i> <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-pulse"></i></span>˚C</span>
+	</div>
+
+        
+        <div class="post-tags">
+        
+		<a class="post-tags-item" href="http://localhost:4000/Blog//tags/">Ubuntu</a>
+        
+		<a class="post-tags-item" href="http://localhost:4000/Blog//tags/">code</a>
+        
+	</div>
+    </center>
+    
+</header>
+
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+<div class="post-content">
+    <center>
+	
+	<p>Ubuntu OS</p>
+	
+    </center>
+	<h2>Directory</h2>
+</div>
+
+<div id="category"></div>
+
+<div class="post-content" itemprop="articleBody">
+    <h2 id="一备份系统">一、备份系统</h2>
+<p>背景：公司为每人加装一块256G固态硬盘，为了让系统运行在固态硬盘上，又不想重装系统，主要是新系统装软件，配置这配置那的烦！备份还原这种方式更适合</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/dev/sda7 为当前要备份的Linux系统盘（以下称系统磁盘）
+/dev/sda6 为存放备份Linux系统的备份盘（以下称备份磁盘）
+/dev/sdb1 为接受还原系统的空磁盘（以下称还原磁盘）
+
+//1.获得root权限
+$ sudo -s
+
+//2.查看当前分区状况
+$ fdisk -l
+
+//3.挂载系统磁盘到mnt目录
+$ mount /dev/sda7 /mnt
+
+//4.挂载备份磁盘到media目录
+$ mount /dev/sda6 /media
+
+//5.备份系统，将系统磁盘数据备份到备份磁盘的backup.sfs中
+$ mksquashfs /mnt/ /media/backup.sfs
+
+//6.同步存盘 让系统保存数据
+$ sync
+
+
+//7.卸载系统磁盘和备份磁盘
+$ umount /mnt
+$ umount /media
+</code></pre></div></div>
+
+<h2 id="二还原系统">二、还原系统</h2>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>//1.获得root权限
+$ sudo -s
+
+//2.查看当前分区状况
+$ fdisk -l
+
+//3.格式化还原磁盘
+$ mkfs.ext4 /dev/sdb1
+
+//4.挂载还原磁盘到mnt目录
+$ mount /dev/sdb1 /mnt
+
+//5.挂载备份磁盘到media目录
+$ mount /dev/sda6 /media
+
+//6.创建临时目录
+$ mkdir /recovery
+
+//7.挂载镜像文件
+$ mount -o loop /media/backup.sfs /recovery
+
+//8.复制文件到还原磁盘
+$ cp -a /recovery/* /mnt
+
+//9.挂载虚拟文件系统，这是为了后面修复引导做准备
+$ mount --o bind /dev /mnt/dev
+$ mount --o bind /proc /mnt/proc
+$ mount --o bind /sys /mnt/sys
+$ mount --o bind /run /mnt/run（这一步可以省略）
+
+//10.把根目录换成还原磁盘所在目录
+$ chroot /mnt/
+
+//11.查看还原磁盘文件系统UUID和类型，格式化了分区后UUID发生了变化，若不修改，系统将无法正常挂载分区，导致启动异常。
+$ blkid /dev/sdb1
+// /dev/sdb1: UUID="9002cf6e-db33-43e3-bdd1-076724087a53" TYPE="ext4" PARTUUID="00bdd9ac-01"
+
+//12.修改UUID设置
+$ vi /etc/fstab
+//&lt;file system&gt;  &lt;mount point&gt;  &lt;type&gt;  &lt;options&gt;  &lt;dump&gt;  &lt;pass&gt;
+//1.文件系统 2.挂载点 3.类型 4.选项 5.0表示不备份 6.必须为0或2(除非引导分区为1)
+//修改挂载点为/的UUID
+//UUID=9002cf6e-db33-43e3-bdd1-076724087a53 /               ext4    errors=remount-ro  0       1
+
+//13.更新GRUB 因为UUID被改动，所以我们需要更新GRUB。
+$ grub-install /dev/sdb （sdb是你主硬盘的位置）
+$ update-grub
+
+//14.退出chroot
+$ exit
+
+//15.卸载文件系统
+$ umount /mnt/dev
+$ umount /mnt/proc
+$ umount /mnt/sys
+$ umount /mnt/run
+
+//16.同步存盘 让系统保存数据
+$ sync
+</code></pre></div></div>
+
+<p><a href="https://www.ithome.com/html/win10/331942.htm">参考</a></p>
+
+<p><img src="../images/ubuntu/ubuntu_backup_restore.jpg" alt="ubuntu.jpg" /></p>
+
+<h2 id="三装windowsubuntu双系统之引导修复">三、装windows+ubuntu双系统之引导修复</h2>
+<p>出现问题：</p>
+<ul>
+  <li>情况1. 在windows的基础上安装ubuntu，报错“无法将grub-efi-amd64-signed软件包安装到/target/，如果没有GRUB启动引导器，所安装的系统将无法启动”</li>
+  <li>情况2：在win10的基础上安装了ubuntu，但是后来重新安装了win10，导致ubuntu的引导消失。</li>
+</ul>
+
+<p>解决方案：</p>
+<ol>
+  <li>制作一个U盘启动盘。</li>
+  <li>打开电脑后选择u盘启动盘，然后选择try ubuntu without install（试用不安装）</li>
+  <li>进入ubuntu系统后，连接好网络，ctrl+alt+T 打开终端，输入下面命令
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> sudo add-apt-repository ppa:yannubuntu/boot-repair
+ sudo apt update
+ sudo apt install boot-repair &amp;&amp; boot-repair
+</code></pre></div>    </div>
+  </li>
+  <li>会出现如下界面，选择‘推荐修复’（recommended repair）
+<img src="../images/ubuntu/ubuntu_boot_repair.png" alt="boot_repair.jpg" /></li>
+  <li>按照boot repair提示的一步步操作</li>
+  <li>执行以下命令，更新GRUB启动引导器，完成后重启电脑
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> sudo update-grub &amp;&amp; sudo update-grub2
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h2 id="四ubuntu1804优化">四、Ubuntu18.04优化</h2>
+
+<ol>
+  <li>
+    <p>下载执行shell：<a href="https://github.com/starry90/SampleForShell/blob/master/ubuntu_config.sh">Ubuntu常用软件</a></p>
+  </li>
+  <li>gnome优化软件扩展
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1 Dash to Dock 
+ 2 No title bar 全屏时应用标题栏延伸到状态栏 
+ 3 Topicons plus 顶栏显示应用图标
+ 4 Simple net speed 顶栏显示网速
+</code></pre></div>    </div>
+  </li>
+  <li>gnome优化软件基本设置
+    <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 1.窗口 — 放置 选择‘左’
+    
+ 2.扩展 － ‘Dash to Dock’ － 点击小齿轮 － 行为
+ 滚动动作（选择‘在窗口间循环’）
+    
+ 3.扩展 － ‘Dash to Dock’ － 点击小齿轮 － 外观
+ Customize windows counter indicators (选择‘点’)
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+</div>
+
+<div>
+	
+	<div class="eof"></div>
+	
+</div>
+
+<div class="share">
+    <p>Share this post with: </p>
+	<a href="https://twitter.com/intent/tweet?text=Ubuntu系统(备份-还原-引导修复-系统优化)@&amp;url=http://localhost:4000/Blog//coding/Ubuntu%E7%B3%BB%E7%BB%9F(%E5%A4%87%E4%BB%BD-%E8%BF%98%E5%8E%9F-%E5%BC%95%E5%AF%BC%E4%BF%AE%E5%A4%8D-%E7%B3%BB%E7%BB%9F%E4%BC%98%E5%8C%96).html" class="twitter-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/Blog//coding/Ubuntu%E7%B3%BB%E7%BB%9F(%E5%A4%87%E4%BB%BD-%E8%BF%98%E5%8E%9F-%E5%BC%95%E5%AF%BC%E4%BF%AE%E5%A4%8D-%E7%B3%BB%E7%BB%9F%E4%BC%98%E5%8C%96).html" class="facebook-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://plus.google.com/share?url=http://localhost:4000/Blog//coding/Ubuntu%E7%B3%BB%E7%BB%9F(%E5%A4%87%E4%BB%BD-%E8%BF%98%E5%8E%9F-%E5%BC%95%E5%AF%BC%E4%BF%AE%E5%A4%8D-%E7%B3%BB%E7%BB%9F%E4%BC%98%E5%8C%96).html" class="googleplus-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-google-plus fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+</div>
+
+
+<div id="disqus_thread"></div>
+
+
+ 
+</div>
+
+
+</article>
+
+  </div>
+
+</body>
+
+<foot>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <center>
+        
+		<p><a class="link" href="/Blog//archive/">Archive</a> /
+		<a class="link" href="/Blog//category/">Category</a> / 
+		<a class="link" href="/Blog//tags/">Tags</a> / 
+		<a class="link" href="/Blog//about/">About</a> <!-- /
+        <a class="link" href="/Blog//contact/">Contact</a> -->
+        </p>
+
+        <span><script>document.write(new Date().getFullYear());</script></span>
+        <span>&copy;</span>
+        
+		<a class="link" href="/Blog/">Starry</a>
+		<br>
+		<span>Powered by <a class="link" href="https://jekyllrb.com/" target="_blank">Jekyll</a> | </span>
+				<iframe
+			style="margin-left: 2px; margin-bottom:-5px;"
+			frameborder="0" scrolling="0" width="150px" height="20px"
+			src="https://ghbtns.com/github-btn.html?user=starry90&type=follow&count=true" >
+		</iframe>
+
+    </center>
+    
+  </div>
+
+</footer>
+
+    <foot>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Derictory -->
+
+  <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+  <script src="http://yandex.st/highlightjs/6.2/highlight.min.js"></script>
+
+<!-- Hit analytics -->
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- Directory -->
+
+<script src="/Blog//js/main.js"></script>
+
+</foot>
+
+
+</foot>
+
+</html>

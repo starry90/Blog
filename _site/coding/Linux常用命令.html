@@ -109,12 +109,13 @@
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo umount /dev/sda6
 </code></pre></div></div>
 
-<p>5.永久挂载分区
-a.获取文件系统UUID和类型</p>
+<p>5.永久挂载分区</p>
+
+<p>a. 获取文件系统UUID和类型</p>
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo blkid /dev/sda6
 #/dev/sda6: LABEL="M-fM-^VM-^GM-fM-!M-#" UUID="98C01176C0115BB6" TYPE="ntfs" PARTUUID="d52d72a6-06"
 </code></pre></div></div>
-<p>b.在/etc/fstab文件末尾加上以下内容</p>
+<p>b. 在/etc/fstab文件末尾加上以下内容</p>
 <div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>UUID=98C01176C0115BB6 /mnt ntfs defaults 0 0
 #&lt;file system&gt;  &lt;mount point&gt;  &lt;type&gt;  &lt;options&gt;  &lt;dump&gt;  &lt;pass&gt;
 #1.文件系统 2.挂载点 3.类型 4.选项 5.0表示不备份 6.必须为0或2(除非引导分区为1)

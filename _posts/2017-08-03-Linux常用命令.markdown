@@ -32,12 +32,13 @@ sudo umount /dev/sda6
 ```
 
 5.永久挂载分区
-a.获取文件系统UUID和类型
+
+a. 获取文件系统UUID和类型
 ```
 sudo blkid /dev/sda6
 #/dev/sda6: LABEL="M-fM-^VM-^GM-fM-!M-#" UUID="98C01176C0115BB6" TYPE="ntfs" PARTUUID="d52d72a6-06"
 ```
-b.在/etc/fstab文件末尾加上以下内容
+b. 在/etc/fstab文件末尾加上以下内容
 ```
 UUID=98C01176C0115BB6 /mnt ntfs defaults 0 0
 #<file system>  <mount point>  <type>  <options>  <dump>  <pass>
