@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- CSS -->
+
+  <link rel="stylesheet" href="/Blog//css/main.css">
+  <link rel="canonical" href="http://localhost:4000/Blog//coding/%E4%BD%BF%E7%94%A8DownloadManager%E5%A4%84%E7%90%86%E4%B8%8B%E8%BD%BD%E4%BB%BB%E5%8A%A1.html">
+  <link rel="alternate" type="application/rss+xml" title="何事秋风悲画扇" href="http://localhost:4000/Blog//feed.xml">
+
+<!-- Google font -->
+
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Noto Sans">
+
+<!-- font awesome -->
+
+<link rel="stylesheet" href="/css/font-awesome/css/font-awesome.min.css">
+
+</head>
+
+
+  
+    <script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    
+  ga('create', 'UA-133449851-1', 'auto');
+  ga('send', 'pageview');
+    
+	</script>
+
+
+  
+
+  
+
+  </head>
+
+  <body>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>使用DownloadManager处理下载任务</title>
+  <meta name="description" content="最近做SDK开发，有个简单的下载功能，为了方便及不增加第三方库，遂采用了系统的DownloadManager来处理下载任务。">
+</head>
+
+
+  <div class="wrapper">
+          <header class="post-header">
+
+    <center><div class="post-title" itemprop="name headline">使用DownloadManager处理下载任务</div>
+
+		<div class="post-meta"><i class="fa fa-calendar-o"></i> <time datetime="25 Dec 2018" itemprop="datePublished">Dec 25 2018</time>
+
+		&nbsp;&nbsp;•&nbsp;&nbsp;<i class="fa fa-user-secret"></i> <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Starry</span>
+        
+		<br>
+		<i class="fa fa-eye"></i> <span id="busuanzi_value_page_pv"><i class="fa fa-spinner fa-pulse"></i></span>˚C</span>
+	</div>
+
+        
+        <div class="post-tags">
+        
+		<a class="post-tags-item" href="http://localhost:4000/Blog//tags/">code</a>
+        
+	</div>
+    </center>
+    
+</header>
+
+<article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+<div class="post-content">
+    <center>
+	
+	<p></p>
+	
+    </center>
+	<h2>Directory</h2>
+</div>
+
+<div id="category"></div>
+
+<div class="post-content" itemprop="articleBody">
+    <p>最近做SDK开发，有个简单的下载功能，为了方便及不增加第三方库，遂采用了系统的DownloadManager来处理下载任务。</p>
+
+<p>官网的说明：</p>
+<blockquote>
+  <p>The download manager is a system service that handles long-running HTTP downloads. Clients may request that a URI be downloaded to a particular destination file. The download manager will conduct the download in the background, taking care of HTTP interactions and retrying downloads after failures or across connectivity changes and system reboots.</p>
+
+  <p>Apps that request downloads through this API should register a broadcast receiver for ACTION_NOTIFICATION_CLICKED to appropriately handle when the user clicks on a running download in a notification or from the downloads UI.</p>
+
+  <p>Note that the application must have the Manifest.permission.INTERNET permission to use this class.</p>
+
+  <p>Instances of this class must be obtained using Context.getSystemService(Class) with the argument DownloadManager.class or Context.getSystemService(String) with the argument Context.DOWNLOAD_SERVICE.</p>
+</blockquote>
+
+<p>下载状态：</p>
+<ul>
+  <li>DownloadManager.STATUS_PAUSED：下载暂停</li>
+  <li>DownloadManager.STATUS_PENDING：下载延迟</li>
+  <li>DownloadManager.STATUS_RUNNING：正在下载</li>
+  <li>DownloadManager.STATUS_SUCCESSFUL：下载完成</li>
+  <li>DownloadManager.STATUS_FAILED：下载失败</li>
+</ul>
+
+<p>文件信息：</p>
+<ul>
+  <li>DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR：已下载文件大小</li>
+  <li>DownloadManager.COLUMN_TOTAL_SIZE_BYTES：文件总大小</li>
+</ul>
+
+<p>广播：</p>
+<ul>
+  <li>DownloadManager.ACTION_NOTIFICATION_CLICKED：下载通知点击事件广播</li>
+</ul>
+
+<p>最后代码如下</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class DownloadHelper {
+
+    private static final String TAG = "DownloadHelper";
+
+    private boolean debug = false;
+
+    private Context context;
+    /**
+     * 系统下载管理器
+     */
+    private DownloadManager mDownloadManager;
+    /**
+     * 下载ID
+     */
+    private long mDownloadId;
+    /**
+     * 文件名
+     */
+    private String fileName;
+    /**
+     * 文件下载地址
+     */
+    private String downloadUrl;
+
+    private boolean downloading;
+
+    /**
+     * 通知栏点击事件，点击进入下载详情
+     */
+    private BroadcastReceiver mDownloadDetailsReceiver;
+
+    private final Runnable mQueryProgressRunnable = new Runnable() {
+
+        @Override
+        public void run() {
+            queryProgress();
+            if (downloading) {
+                mHandler.postDelayed(mQueryProgressRunnable, 1000);
+            }
+        }
+    };
+
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
+
+    private DownloadListener downloadListener;
+
+    public interface DownloadListener {
+
+        void onStart();
+
+        void onProgress(long soFarSize, long totalSize);
+
+        void onFinish(String fileFullPath, long totalSize);
+
+        void onFailed();
+    }
+
+    public void setDownloadListener(DownloadListener listener) {
+        this.downloadListener = listener;
+    }
+
+    private DownloadHelper(Context context, String fileName, String downloadUrl) {
+        this.context = context;
+        this.fileName = fileName;
+        this.downloadUrl = downloadUrl;
+    }
+
+    public static DownloadHelper getInstance(Context context, String fileName, String downloadUrl) {
+        DownloadHelper helper = new DownloadHelper(context, fileName, downloadUrl);
+        helper.registerReceiver();
+        return helper;
+    }
+
+    /**
+     * 注册广播
+     */
+    private void registerReceiver() {
+        mDownloadDetailsReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (DownloadManager.ACTION_NOTIFICATION_CLICKED.equals(action)) {
+                    showDownloadList();
+                }
+            }
+        };
+        context.registerReceiver(mDownloadDetailsReceiver, new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));
+    }
+
+    /**
+     * 显示下载列表
+     */
+    public void showDownloadList() {
+        Intent downloadIntent = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
+        if (downloadIntent.resolveActivity(context.getPackageManager()) != null) {
+            context.startActivity(downloadIntent);
+        }
+    }
+
+    /**
+     * 开始下载
+     */
+    public void startDownload() {
+        if (downloadListener != null) downloadListener.onStart();
+
+        mDownloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(downloadUrl));
+        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE | DownloadManager.Request.NETWORK_WIFI)
+                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                .setTitle(fileName) // 通知标题信息
+                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName);
+        try {
+            mDownloadId = mDownloadManager.enqueue(request); // 加入下载队列
+            if (mDownloadId != 0) {
+                startQueryProgress();
+            }
+        } catch (IllegalArgumentException e) {
+            if (downloadListener != null) downloadListener.onFailed();
+            // "更新失败", "请在设置中开启下载管理"
+            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+            intent.setData(Uri.parse("package:" + "com.android.providers.downloads"));
+            if (intent.resolveActivity(context.getPackageManager()) != null) {
+                context.startActivity(intent);
+            }
+        }
+    }
+
+    /**
+     * 查询下载进度
+     */
+    private void queryProgress() {
+        // 通过ID向下载管理查询下载情况，返回一个cursor
+        Cursor c = mDownloadManager.query(new DownloadManager.Query().setFilterById(mDownloadId));
+        if (c != null &amp;&amp; c.moveToFirst()) {
+            int status = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
+            logDebug("下载状态：" + status);
+            switch (status) {
+                case DownloadManager.STATUS_PAUSED: //下载暂停， 由系统触发
+                case DownloadManager.STATUS_PENDING: //下载延迟， 由系统触发
+                    break;
+                case DownloadManager.STATUS_RUNNING: //正在下载， 由系统触发
+                    long soFarSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                    long totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                    if (totalSize &gt; 0) {
+                        logDebug(String.format("total:%s soFar:%s ", totalSize, soFarSize) + soFarSize * 1.0f / totalSize);
+                        if (downloadListener != null) {
+                            downloadListener.onProgress(soFarSize, totalSize);
+                        }
+                    }
+                    break;
+                case DownloadManager.STATUS_SUCCESSFUL: //下载完成， 由系统触发
+                    stopQueryProgress();
+                    File downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+                    totalSize = c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                    if (downloadListener != null) {
+                        String fullName = downloadDir.getPath() + File.separator + fileName;
+                        logDebug(fullName);
+                        downloadListener.onFinish(fullName, totalSize);
+                    }
+                    break;
+                case DownloadManager.STATUS_FAILED: //下载失败， 由系统触发
+                    if (downloadListener != null) downloadListener.onFailed();
+                    break;
+            }
+        } else {
+            stopQueryProgress();
+            if (downloadListener != null) downloadListener.onFailed();
+        }
+        closeCursor(c);
+    }
+
+    private void closeCursor(Cursor cursor) {
+        if (cursor != null &amp;&amp; !cursor.isClosed()) {
+            cursor.close();
+        }
+    }
+
+    private void logDebug(String msg) {
+        if (debug) {
+            Log.e(TAG, msg);
+        }
+    }
+
+    /**
+     * 移除下载并删除下载文件
+     */
+    public void removeDownload() {
+        mDownloadManager.remove(mDownloadId);
+        stopQueryProgress();
+    }
+
+    /**
+     * 开始查询下载进度
+     */
+    private void startQueryProgress() {
+        downloading = true;
+        mHandler.post(mQueryProgressRunnable);
+    }
+
+    /**
+     * 停止查询下载进度
+     */
+    private void stopQueryProgress() {
+        downloading = false;
+        mHandler.removeCallbacks(mQueryProgressRunnable);
+    }
+
+    public boolean isDownloading() {
+        return downloading;
+    }
+
+    public void onDestroy() {
+        try {
+            stopQueryProgress(); //停止查询下载进度
+            context.unregisterReceiver(mDownloadDetailsReceiver);
+        } catch (Exception ex) {
+            //java.lang.IllegalArgumentException: Receiver not registered:
+        }
+    }
+}
+</code></pre></div></div>
+
+</div>
+
+<div>
+	
+	<div class="eof"></div>
+	
+</div>
+
+<div class="share">
+    <p>Share this post with: </p>
+	<a href="https://twitter.com/intent/tweet?text=使用DownloadManager处理下载任务@&amp;url=http://localhost:4000/Blog//coding/%E4%BD%BF%E7%94%A8DownloadManager%E5%A4%84%E7%90%86%E4%B8%8B%E8%BD%BD%E4%BB%BB%E5%8A%A1.html" class="twitter-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-twitter fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/Blog//coding/%E4%BD%BF%E7%94%A8DownloadManager%E5%A4%84%E7%90%86%E4%B8%8B%E8%BD%BD%E4%BB%BB%E5%8A%A1.html" class="facebook-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-facebook fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+    
+	<a href="https://plus.google.com/share?url=http://localhost:4000/Blog//coding/%E4%BD%BF%E7%94%A8DownloadManager%E5%A4%84%E7%90%86%E4%B8%8B%E8%BD%BD%E4%BB%BB%E5%8A%A1.html" class="googleplus-share">
+		<span class="fa-stack fa-lg">
+			<i class="fa fa-circle fa-stack-2x"></i>
+			<i class="fa fa-google-plus fa-stack-1x fa-inverse"></i>
+		</span>
+	</a>
+</div>
+
+
+<div id="disqus_thread"></div>
+
+
+ 
+</div>
+
+
+</article>
+
+  </div>
+
+</body>
+
+<foot>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <center>
+        
+		<p><a class="link" href="/Blog//archive/">Archive</a> /
+		<a class="link" href="/Blog//category/">Category</a> / 
+		<a class="link" href="/Blog//tags/">Tags</a> / 
+		<a class="link" href="/Blog//about/">About</a> <!-- /
+        <a class="link" href="/Blog//contact/">Contact</a> -->
+        </p>
+
+        <span><script>document.write(new Date().getFullYear());</script></span>
+        <span>&copy;</span>
+        
+		<a class="link" href="/Blog/">Starry</a>
+		<br>
+		<span>Powered by <a class="link" href="https://jekyllrb.com/" target="_blank">Jekyll</a> | </span>
+				<iframe
+			style="margin-left: 2px; margin-bottom:-5px;"
+			frameborder="0" scrolling="0" width="150px" height="20px"
+			src="https://ghbtns.com/github-btn.html?user=starry90&type=follow&count=true" >
+		</iframe>
+
+    </center>
+    
+  </div>
+
+</footer>
+
+    <foot>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Derictory -->
+
+  <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+  <script src="http://yandex.st/highlightjs/6.2/highlight.min.js"></script>
+
+<!-- Hit analytics -->
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+<!-- Directory -->
+
+<script src="/Blog//js/main.js"></script>
+
+</foot>
+
+
+</foot>
+
+</html>
