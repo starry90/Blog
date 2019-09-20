@@ -46,6 +46,21 @@ local.properties
 ![git常用命令.jpg](../images/android/git_command.jpg)
 
 ```
+问题：
+Windows下和Linux下的文本文件的换行符不一致。
+Windows：两个字符，CRLF，即\r\n
+Linux：一个字符，LF，即\n
+三种设置：
+#提交时转换为LF，检出时转换为CRLF
+git config --global core.autocrlf true   
+#提交时转换为LF，检出时不转换
+git config --global core.autocrlf input   
+#提交检出均不转换
+git config --global core.autocrlf false
+结论：
+建议设置成 git config --global core.autocrlf input
+
+
 #查看用户名
 git config user.name
 #查看用户email
